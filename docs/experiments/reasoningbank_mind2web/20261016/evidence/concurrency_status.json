@@ -1,0 +1,270 @@
+{
+  "status": "running",
+  "started": 1792054645.7030458,
+  "updated": 1792115929.885606,
+  "elapsed_seconds": 61284.182561159134,
+  "pid": 1033323,
+  "active": {
+    "aligned_train": {
+      "pid": 555212,
+      "progress": {
+        "status": "running",
+        "started": 1792054647.221473,
+        "mode": "aligned_train",
+        "phase": "solve",
+        "completed": 478,
+        "processed": 500,
+        "elapsed_seconds": 61279.34,
+        "updated": 1792115926.5642276,
+        "epoch": 2,
+        "batch": 25,
+        "failed": 22
+      }
+    },
+    "paper_test_task": {
+      "pid": 555213,
+      "progress": {
+        "status": "running",
+        "started": 1792054646.677463,
+        "mode": "stream",
+        "phase": "solve",
+        "completed": 153,
+        "elapsed_seconds": 61279.79,
+        "updated": 1792115926.4648395,
+        "active": "a3f650df-02e8-409a-987c-3acddf0ad1f5",
+        "epoch": 1,
+        "step": 7,
+        "total_steps": 10,
+        "processed": 165,
+        "failed": 14
+      }
+    },
+    "paper_test_website": {
+      "pid": 555214,
+      "progress": {
+        "status": "running",
+        "started": 1792054646.6376662,
+        "mode": "stream",
+        "phase": "solve",
+        "completed": 129,
+        "elapsed_seconds": 61279.74,
+        "updated": 1792115926.379195,
+        "active": "ca2d4bc8-f6c3-4e70-bff8-181ea54d9485",
+        "epoch": 1,
+        "step": 3,
+        "total_steps": 5,
+        "processed": 136,
+        "failed": 7
+      }
+    },
+    "paper_test_domain": {
+      "pid": 555215,
+      "progress": {
+        "status": "running",
+        "started": 1792054646.9681933,
+        "mode": "stream",
+        "phase": "learning",
+        "completed": 195,
+        "elapsed_seconds": 61279.5,
+        "updated": 1792115926.4648392,
+        "active": "36d7dc8f-2098-4b9c-b7cc-455b60558b40",
+        "epoch": 1,
+        "step": 3,
+        "total_steps": 3,
+        "processed": 203,
+        "failed": 8
+      }
+    },
+    "none_test_task_05": {
+      "pid": 1016930,
+      "progress": {
+        "status": "running",
+        "started": 1792114826.1514425,
+        "mode": "eval",
+        "phase": "solve",
+        "completed": 4,
+        "elapsed_seconds": 1095.05,
+        "updated": 1792115921.2040508,
+        "active": "453ebdd8-0989-455e-87ba-ebad183c0a04",
+        "epoch": 1,
+        "step": 3,
+        "total_steps": 4,
+        "processed": 8,
+        "failed": 4
+      }
+    },
+    "none_test_task_06": {
+      "pid": 1024701,
+      "progress": {
+        "status": "running",
+        "started": 1792115271.952553,
+        "mode": "eval",
+        "phase": "solve",
+        "completed": 3,
+        "elapsed_seconds": 649.77,
+        "updated": 1792115921.7211363,
+        "active": "333e1892-c879-4ac9-a6a8-fbceda53ae08",
+        "epoch": 1,
+        "step": 4,
+        "total_steps": 11,
+        "processed": 5,
+        "failed": 2
+      }
+    },
+    "none_test_task_07": {
+      "pid": 1024702,
+      "progress": {
+        "status": "running",
+        "started": 1792115272.199899,
+        "mode": "eval",
+        "phase": "solve",
+        "completed": 4,
+        "elapsed_seconds": 649.73,
+        "updated": 1792115921.927591,
+        "active": "3e472e41-99d6-4215-8880-9c3a48d3c33a",
+        "epoch": 1,
+        "step": 6,
+        "total_steps": 14,
+        "processed": 7,
+        "failed": 3
+      }
+    },
+    "none_test_website_00": {
+      "pid": 1033321,
+      "progress": {
+        "status": "queued",
+        "started": 1792115271.9917297,
+        "mode": "eval",
+        "phase": "capacity_wait",
+        "completed": 2,
+        "elapsed_seconds": 480.02,
+        "updated": 1792115764.312579,
+        "active": "18c81087-23fc-4154-8f69-31d1ed10efa4",
+        "epoch": 1,
+        "step": 5,
+        "total_steps": 9,
+        "processed": 2,
+        "failed": 0,
+        "note": "Saved steps and consumed budget; queue waiting excluded."
+      }
+    },
+    "none_test_website_01": {
+      "pid": 1033322,
+      "progress": {
+        "status": "queued",
+        "started": 1792115272.2520368,
+        "mode": "eval",
+        "phase": "capacity_wait",
+        "completed": 1,
+        "elapsed_seconds": 485.2,
+        "updated": 1792115764.313694,
+        "active": "2de30aa3-b7a9-43eb-84f1-df10851a7da3",
+        "epoch": 1,
+        "step": 5,
+        "total_steps": 5,
+        "processed": 3,
+        "failed": 2,
+        "note": "Saved steps and consumed budget; queue waiting excluded."
+      }
+    },
+    "none_test_website_02": {
+      "pid": 1030659,
+      "progress": {
+        "status": "queued",
+        "started": 1792115272.1610541,
+        "mode": "eval",
+        "phase": "capacity_wait",
+        "completed": 1,
+        "elapsed_seconds": 330.02,
+        "updated": 1792115664.5914454,
+        "active": "4a023ef6-99d8-41b3-a0c1-2337f17eef1e",
+        "epoch": 1,
+        "step": 2,
+        "total_steps": 3,
+        "processed": 5,
+        "failed": 4,
+        "note": "Checkpoint saved; waits for scheduler reserved slots to drain to 12. Queue time excluded from task action budget."
+      }
+    },
+    "none_test_website_03": {
+      "pid": 1030660,
+      "progress": {
+        "status": "queued",
+        "started": 1792115272.6289964,
+        "mode": "eval",
+        "phase": "capacity_wait",
+        "completed": 1,
+        "elapsed_seconds": 330.02,
+        "updated": 1792115664.5918815,
+        "active": "39d1c8cf-6179-47b4-9fd2-2ad83ec486c2",
+        "epoch": 1,
+        "step": 4,
+        "total_steps": 16,
+        "processed": 4,
+        "failed": 3,
+        "note": "Checkpoint saved; waits for scheduler reserved slots to drain to 12. Queue time excluded from task action budget."
+      }
+    },
+    "none_test_website_04": {
+      "pid": 1030661,
+      "progress": {
+        "status": "queued",
+        "started": 1792115272.5551124,
+        "mode": "eval",
+        "phase": "capacity_wait",
+        "completed": 0,
+        "elapsed_seconds": 330.02,
+        "updated": 1792115664.5921216,
+        "active": "250ec75c-48af-449c-aa56-882ff62988b3",
+        "epoch": 1,
+        "step": 4,
+        "total_steps": 7,
+        "processed": 2,
+        "failed": 2,
+        "note": "Checkpoint saved; waits for scheduler reserved slots to drain to 12. Queue time excluded from task action budget."
+      }
+    },
+    "none_test_website_05": {
+      "pid": 1030662,
+      "progress": {
+        "status": "queued",
+        "started": 1792115271.9128773,
+        "mode": "eval",
+        "phase": "capacity_wait",
+        "completed": 1,
+        "elapsed_seconds": 330.71,
+        "updated": 1792115664.5923488,
+        "active": "1525b41a-48fa-45ce-a84e-957a71b30c68",
+        "epoch": 1,
+        "step": 3,
+        "total_steps": 4,
+        "processed": 1,
+        "failed": 0,
+        "note": "Checkpoint saved; waits for scheduler reserved slots to drain to 12. Queue time excluded from task action budget."
+      }
+    }
+  },
+  "done": [
+    "none_validation_00",
+    "none_validation_01",
+    "none_validation_02",
+    "none_validation_03",
+    "none_validation_04",
+    "none_validation_05",
+    "none_validation_06",
+    "none_validation_07",
+    "none_test_task_00",
+    "none_test_task_01",
+    "none_test_task_02",
+    "none_test_task_03",
+    "none_test_task_04"
+  ],
+  "failed": {},
+  "blocked": [],
+  "pending": 51,
+  "expected_episodes": 4932,
+  "processed": 1296,
+  "runtime_workers": 10,
+  "used_slots": 16,
+  "controller_mode": "adopted_live_capacity"
+}

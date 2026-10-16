@@ -1,0 +1,35 @@
+{
+  "created": 1792115764.3141246,
+  "recoveries": {
+    "none_test_website_00": {
+      "source": "/home/xhgong/project/ReasoningBank/outputs/mind2web/two_protocols_20261015T085651Z/none_test_website_00",
+      "failed_episode": "epoch-1:18c81087-23fc-4154-8f69-31d1ed10efa4",
+      "kind": "actions",
+      "previous_elapsed": 47.56344270706177,
+      "stopped_at": 1792115764.2834513,
+      "completed_prefix": 2,
+      "reused_steps": 4
+    },
+    "none_test_website_01": {
+      "source": "/home/xhgong/project/ReasoningBank/outputs/mind2web/two_protocols_20261015T085651Z/none_test_website_01",
+      "failed_episode": "epoch-1:2de30aa3-b7a9-43eb-84f1-df10851a7da3",
+      "kind": "actions",
+      "previous_elapsed": 37.833142042160034,
+      "stopped_at": 1792115764.301823,
+      "completed_prefix": 3,
+      "reused_steps": 4
+    }
+  },
+  "previous_capacity": {
+    "workers": 12,
+    "previous_workers": 16,
+    "updated": 1792115603.5257335,
+    "reason": "16 slots caused sustained rate limiting; preserve original A/B processes and queue four no-memory evals with step recovery.",
+    "queued_recovery_jobs": [
+      "none_test_website_02",
+      "none_test_website_03",
+      "none_test_website_04",
+      "none_test_website_05"
+    ]
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "created": 1792115603.526288,
+  "recoveries": {
+    "none_test_website_02": {
+      "source": "/home/xhgong/project/ReasoningBank/outputs/mind2web/two_protocols_20261015T085651Z/none_test_website_02",
+      "failed_episode": "epoch-1:4a023ef6-99d8-41b3-a0c1-2337f17eef1e",
+      "kind": "actions",
+      "previous_elapsed": 24.931870937347412,
+      "stopped_at": 1792115603.4559605,
+      "completed_prefix": 5,
+      "reused_steps": 1
+    },
+    "none_test_website_03": {
+      "source": "/home/xhgong/project/ReasoningBank/outputs/mind2web/two_protocols_20261015T085651Z/none_test_website_03",
+      "failed_episode": "epoch-1:39d1c8cf-6179-47b4-9fd2-2ad83ec486c2",
+      "kind": "actions",
+      "previous_elapsed": 163.77722024917603,
+      "stopped_at": 1792115603.4743776,
+      "completed_prefix": 4,
+      "reused_steps": 3
+    },
+    "none_test_website_04": {
+      "source": "/home/xhgong/project/ReasoningBank/outputs/mind2web/two_protocols_20261015T085651Z/none_test_website_04",
+      "failed_episode": "epoch-1:250ec75c-48af-449c-aa56-882ff62988b3",
+      "kind": "actions",
+      "previous_elapsed": 68.09433031082153,
+      "stopped_at": 1792115603.4840844,
+      "completed_prefix": 2,
+      "reused_steps": 3
+    },
+    "none_test_website_05": {
+      "source": "/home/xhgong/project/ReasoningBank/outputs/mind2web/two_protocols_20261015T085651Z/none_test_website_05",
+      "failed_episode": "epoch-1:1525b41a-48fa-45ce-a84e-957a71b30c68",
+      "kind": "actions",
+      "previous_elapsed": 154.2209825515747,
+      "stopped_at": 1792115603.5025697,
+      "completed_prefix": 1,
+      "reused_steps": 2
+    }
+  },
+  "eval_resume_sha256": "ac3f138986b60d56a9ddc55cc9402b0902b671fefe8711b0015c194b02235da3",
+  "protocol": "Queue waiting excluded; elapsed action budget preserved; original model/prompt/scorer unchanged."
+}

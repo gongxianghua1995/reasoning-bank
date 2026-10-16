@@ -1,0 +1,14 @@
+{
+  "workers": 10,
+  "previous_workers": 12,
+  "updated": 1792115764.3139365,
+  "reason": "Continued rate limiting at 12; limit actual execution to 10, preserving A/B processes.",
+  "queued_recovery_jobs": [
+    "none_test_website_02",
+    "none_test_website_03",
+    "none_test_website_04",
+    "none_test_website_05",
+    "none_test_website_00",
+    "none_test_website_01"
+  ]
+}

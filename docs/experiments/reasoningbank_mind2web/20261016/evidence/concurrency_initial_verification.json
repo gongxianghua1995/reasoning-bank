@@ -1,0 +1,92 @@
+{
+  "updated": 1792115331.74158,
+  "elapsed_since_handoff_seconds": 61.43132162094116,
+  "workers": 16,
+  "used_slots": 16,
+  "checks": {
+    "original_children_same_pids": true,
+    "frozen_source_unchanged": true,
+    "frozen_inputs_unchanged": true,
+    "new_jobs_use_original_config": true
+  },
+  "calls_since_handoff": {
+    "model_response": 31,
+    "model_request": 56,
+    "RateLimitError": 20
+  },
+  "by_job": {
+    "aligned_train": {
+      "model_response": 1,
+      "model_request": 1
+    },
+    "paper_test_task": {
+      "model_response": 3,
+      "model_request": 4,
+      "RateLimitError": 2
+    },
+    "paper_test_website": {
+      "model_response": 1,
+      "model_request": 1,
+      "RateLimitError": 1
+    },
+    "paper_test_domain": {
+      "model_response": 2,
+      "model_request": 3,
+      "RateLimitError": 1
+    },
+    "none_test_task_05": {
+      "model_response": 2,
+      "model_request": 2
+    },
+    "none_test_task_06": {
+      "model_request": 5,
+      "model_response": 3,
+      "RateLimitError": 1
+    },
+    "none_test_task_07": {
+      "model_request": 7,
+      "model_response": 4,
+      "RateLimitError": 2
+    },
+    "none_test_website_00": {
+      "model_request": 3,
+      "model_response": 1,
+      "RateLimitError": 1
+    },
+    "none_test_website_01": {
+      "model_request": 2,
+      "model_response": 1
+    },
+    "none_test_website_02": {
+      "model_request": 7,
+      "RateLimitError": 5,
+      "model_response": 1
+    },
+    "none_test_website_03": {
+      "model_request": 9,
+      "model_response": 7,
+      "RateLimitError": 1
+    },
+    "none_test_website_04": {
+      "model_request": 6,
+      "RateLimitError": 4,
+      "model_response": 1
+    },
+    "none_test_website_05": {
+      "model_request": 6,
+      "model_response": 4,
+      "RateLimitError": 2
+    }
+  },
+  "new_jobs": [
+    "none_test_task_06",
+    "none_test_task_07",
+    "none_test_website_00",
+    "none_test_website_01",
+    "none_test_website_02",
+    "none_test_website_03",
+    "none_test_website_04",
+    "none_test_website_05"
+  ],
+  "note": "Requests include retries and currently in-flight calls. No throughput speedup claim from this short window."
+}

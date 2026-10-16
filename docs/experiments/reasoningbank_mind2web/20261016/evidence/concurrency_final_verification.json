@@ -1,0 +1,35 @@
+{
+  "updated": 1792115859.576289,
+  "elapsed_since_10_workers": 95.26216435432434,
+  "controller": 1033323,
+  "status": "running",
+  "workers": 10,
+  "reserved_slots": 16,
+  "queued": [
+    "none_test_website_00",
+    "none_test_website_01",
+    "none_test_website_02",
+    "none_test_website_03",
+    "none_test_website_04",
+    "none_test_website_05"
+  ],
+  "effective_slots": 10,
+  "since_backoff": {
+    "model_request": 14,
+    "model_response": 12,
+    "RateLimitError": 3,
+    "APITimeoutError": 1
+  },
+  "last_60_seconds": {
+    "model_response": 5,
+    "model_request": 5,
+    "RateLimitError": 1,
+    "APITimeoutError": 1
+  },
+  "checks": {
+    "original_scientific_sources_unchanged": true,
+    "original_inputs_unchanged": true,
+    "A_and_B_pids_preserved": true
+  },
+  "tests_passed": 11
+}
