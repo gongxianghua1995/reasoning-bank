@@ -1,0 +1,26 @@
+{
+  "source": "CAMEL local SWE adapter, originally adapted from GPTSwarm",
+  "files": {
+    "vendor/workspace.py": {
+      "source": "/home/xhgong/project/CAMEL/swe_adapter/vendor/workspace.py",
+      "sha256": "db66cce7fc626385ded780f1009c8f046b8a09540b2cde4106eb8b2e96e3bc17"
+    },
+    "vendor/mini_benchmark.py": {
+      "source": "/home/xhgong/project/CAMEL/swe_adapter/vendor/mini_benchmark.py",
+      "sha256": "c598803a115c626b4c4de683825ae0f8d8c6d0c6ecb06159be65731c4f1c8fb7"
+    },
+    "vendor/mini_repository.py": {
+      "source": "/home/xhgong/project/CAMEL/swe_adapter/vendor/mini_repository.py",
+      "sha256": "3fa6ef2545ea456af4bfa85ebe26e47ebb68087ba9134c400d665060b8cd71c7"
+    },
+    "evaluate.py": {
+      "source": "/home/xhgong/project/CAMEL/swe_adapter/evaluate.py",
+      "sha256": "dc841908f77c6b548173673609226cffded16fd728bbfc2273b83403b5ae370b"
+    },
+    "check_container.py": {
+      "source": "/home/xhgong/project/CAMEL/swe_adapter/check_container.py",
+      "sha256": "f555aca04dd3d1353f3857f2b07d0435af739aeb0830fee0ddd8f4c9dd1e0a76"
+    }
+  },
+  "changes": "workspace container prefix and labels; evaluate labels; check_container JSON helper import. No CAMEL or GPTSwarm scheduler imported."
+}

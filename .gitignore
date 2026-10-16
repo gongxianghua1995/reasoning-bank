@@ -7,3 +7,6 @@ logs*/
 memories_reasoningbank/
 *.log
 gt_eval.jsonl
+/.venv/
+/outputs/
+/.models/

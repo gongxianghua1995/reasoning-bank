@@ -1,0 +1,26 @@
+{
+  "model": "DeepSeek-V4-Flash-0731",
+  "temperature": 0.7,
+  "max_tokens": 16384,
+  "api_timeout": 180,
+  "timeout_recoveries": 2,
+  "case_seconds": 1200,
+  "step_seconds": 180,
+  "judge_seconds": 180,
+  "extract_seconds": 180,
+  "judge_temperature": 0,
+  "extract_temperature": 1,
+  "embedding_model": "BAAI/bge-small-en-v1.5",
+  "embedding_threads": 2,
+  "top_k": 1,
+  "embedding_query_format": "plain",
+  "memory_usage_review": true,
+  "offline_memory_guard": true,
+  "paper_deviations": [
+    "DeepSeek-V4-Flash-0731 replaces Gemini-2.5 used in the paper Mind2Web table.",
+    "Local BGE-small with plain queries replaces gemini-embedding-001; no Gemini credentials configured.",
+    "SwarmEvolution shared compact DOM/top50 candidates/scorer and 1200-second action budget retained.",
+    "Fixed seed42 manifest split order; original Mind2Web ordering and cross-split memory initialization are not publicly executable here.",
+    "Explicit per-item applicability decisions are logged as short JSON fields; offline causal-evidence guard added."
+  ]
+}

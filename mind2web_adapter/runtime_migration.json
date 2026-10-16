@@ -1,0 +1,14 @@
+{
+  "mind2web_adapter/agent.py": {
+    "before": "ab206ea912afc7a2699ae0510cc5834c40e3a7227120a84f8268a798054d90f1",
+    "after": "66a5cfcf978004631140b3938d769297ee54c4eb22985f4986218ca834245989"
+  },
+  "mind2web_adapter/model.py": {
+    "before": "69a066b2a42186b1ac0d9074389b35138a00697e7241cb47eab42d903a6ca3fc",
+    "after": "1e888486f26d8cca4999844d67e0b97d2ef94c5d7a6ae5ec5572f6461144cd97"
+  },
+  "mind2web_adapter/config.json": {
+    "before": "8e74c94e783182de5ed2935824f38845b2d139a4ac4f32d1e4a028b05fcdfb18",
+    "after": "a9d927529a8d530911d4643d3c4c6d318c28ab8841005b5be5a22b4a1a1ef9a5"
+  }
+}

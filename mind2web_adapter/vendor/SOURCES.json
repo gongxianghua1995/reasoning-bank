@@ -1,0 +1,67 @@
+{
+  "swarm_repository": "git@gitcode.com:deyang/agent_evolving.git",
+  "swarm_commit": "b08a5e1559d279ccbaed278d2bfff08e33c6bd38",
+  "reasoningbank_commit": "ed80611788292ea739f1effd31f16c53823b8a0d",
+  "files": [
+    {
+      "source": "/home/xhgong/project/agent_evolving/SwarmEvolution/swarmevo/benches/mind2web/dataset.py",
+      "target": "mind2web_adapter/vendor/swarmevo/benches/mind2web/dataset.py",
+      "sha256": "ce303f2cf0fa52166a491fd9f45928ab4cc34a57fa144af4ee182e7ea2c35735",
+      "unchanged": true
+    },
+    {
+      "source": "/home/xhgong/project/agent_evolving/SwarmEvolution/swarmevo/benches/mind2web/cache.py",
+      "target": "mind2web_adapter/vendor/swarmevo/benches/mind2web/cache.py",
+      "sha256": "67ca004267c4dea17606135cf59b6cae5f8dd76204311bed24c74efb7c3ef177",
+      "unchanged": true
+    },
+    {
+      "source": "/home/xhgong/project/agent_evolving/SwarmEvolution/swarmevo/benches/mind2web/metrics.py",
+      "target": "mind2web_adapter/vendor/swarmevo/benches/mind2web/metrics.py",
+      "sha256": "dc245a0ed5772baab2843ed594d18f17a097033b797cb3fbd08dae30c9465034",
+      "unchanged": true
+    },
+    {
+      "source": "/home/xhgong/project/agent_evolving/SwarmEvolution/swarmevo/benches/mind2web/_vendor/dom_utils.py",
+      "target": "mind2web_adapter/vendor/swarmevo/benches/mind2web/_vendor/dom_utils.py",
+      "sha256": "dc2bff58cee5c16a12c82f450052d9de95807821ba067ef622193d5cf1e0a234",
+      "unchanged": true
+    },
+    {
+      "source": "/home/xhgong/project/agent_evolving/SwarmEvolution/swarmevo/benches/mind2web/_vendor/LICENSE",
+      "target": "mind2web_adapter/vendor/swarmevo/benches/mind2web/_vendor/LICENSE",
+      "sha256": "953ff47dbbc0c0563d1ec2d245b06d1206f2f38c4ed2f0da728e027ae2e5a973",
+      "unchanged": true
+    },
+    {
+      "source": "/home/xhgong/project/agent_evolving/SwarmEvolution/swarmevo/benches/protocol.py",
+      "target": "mind2web_adapter/vendor/swarmevo/benches/protocol.py",
+      "sha256": "251aca3deb36c68497f76b12a6bcfc7a7f61b0d20f44ee0374be45c2189ac142",
+      "unchanged": true
+    },
+    {
+      "source": "/home/xhgong/project/agent_evolving/SwarmEvolution/swarmevo/graph/types.py",
+      "target": "mind2web_adapter/vendor/swarmevo/graph/types.py",
+      "sha256": "5d53e1dc47357c82f752102ec8a9a1767dbb350ca1e01026922124d1e85bf5ba",
+      "unchanged": true
+    },
+    {
+      "source": "WebArena/prompts/memory_instruction.py",
+      "target": "mind2web_adapter/vendor/web_memory_prompts.py",
+      "sha256": "073d354bc84a24ba8a2c697133b5d832fe89ca67a53705fb0af419528f7b11ee",
+      "unchanged_at_copy": true
+    },
+    {
+      "source": "swe_adapter/model.py",
+      "target": "mind2web_adapter/model.py",
+      "sha256": "afaab70a86c7ebc9a1811e587bfbc85e3166b863ae106d281ff3a2e1b9dd3fe6",
+      "unchanged_at_copy": true
+    }
+  ],
+  "note": "Package initializers are replaced solely to isolate data helpers from framework execution. No SwarmEvolution learner/team is used.",
+  "semantic_references": {
+    "WebArena/memory_management.py": "35b8b800180024f3446c4a295fe9d7c19d4aa2cddd0b2f2a44b6680e4d6bc4f9",
+    "WebArena/run.py": "f9edcac62cc612f48db9859c60f71b7479aa126beda802437dd82d81030817b3",
+    "WebArena/pipeline_memory.py": "e0bab83fb7d6e4abc3ea01d1b1f545f9c2730c1719c2bda6d73e54023a80bb96"
+  }
+}

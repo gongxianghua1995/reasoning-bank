@@ -1,0 +1,16 @@
+{
+  "model": "DeepSeek-V4-Flash-0731",
+  "temperature": 0.2,
+  "max_tokens": 16384,
+  "api_timeout": 180,
+  "timeout_recoveries": 2,
+  "case_seconds": 1200,
+  "step_seconds": 180,
+  "judge_seconds": 180,
+  "extract_seconds": 180,
+  "judge_temperature": 0,
+  "extract_temperature": 1,
+  "embedding_model": "BAAI/bge-small-en-v1.5",
+  "embedding_threads": 2,
+  "top_k": 1
+}
