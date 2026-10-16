@@ -1,0 +1,254 @@
+{
+  "complete": true,
+  "updated": 1792042515.96111,
+  "groups": {
+    "global": {
+      "macro": {
+        "element_accuracy": 0.6263614047275429,
+        "operation_f1": 0.8277942591270673,
+        "step_success_rate": 0.5639374744630957,
+        "task_success_rate": 0.1111111111111111,
+        "candidate_recall": 0.9394254204814834,
+        "n_cases": 99,
+        "n_steps": 745
+      },
+      "scored": 99,
+      "scheduled": 101,
+      "unscored": 2,
+      "steps": 745,
+      "correct_steps": 396.0,
+      "micro_step_sr": 0.5315436241610738,
+      "strict_successes": 11.0,
+      "observed_strict_success_over_scheduled": 0.10891089108910891,
+      "processed": 101,
+      "failed": 2,
+      "usage": {
+        "requests": {
+          "solve": 803
+        },
+        "responses": {
+          "solve": 791
+        },
+        "errors": {
+          "APITimeoutError": 11,
+          "RateLimitError": 1
+        },
+        "returned_usage_by_phase": {
+          "solve": {
+            "prompt_tokens": 1954386,
+            "completion_tokens": 1481782,
+            "total_tokens": 3436168
+          }
+        },
+        "note": "Returned usage only; requests without usage may still incur provider cost. No currency estimate."
+      }
+    },
+    "none": {
+      "macro": {
+        "element_accuracy": 0.6354978505469648,
+        "operation_f1": 0.8257091752625709,
+        "step_success_rate": 0.5698453071290883,
+        "task_success_rate": 0.14,
+        "candidate_recall": 0.9396311662766685,
+        "n_cases": 100,
+        "n_steps": 770
+      },
+      "scored": 100,
+      "scheduled": 101,
+      "unscored": 1,
+      "steps": 770,
+      "correct_steps": 406.0,
+      "micro_step_sr": 0.5272727272727272,
+      "strict_successes": 14.0,
+      "observed_strict_success_over_scheduled": 0.13861386138613863,
+      "processed": 101,
+      "failed": 1,
+      "usage": {
+        "requests": {
+          "solve": 801
+        },
+        "responses": {
+          "solve": 789
+        },
+        "errors": {
+          "APITimeoutError": 11,
+          "RateLimitError": 1
+        },
+        "returned_usage_by_phase": {
+          "solve": {
+            "prompt_tokens": 1716500,
+            "completion_tokens": 1427772,
+            "total_tokens": 3144272
+          }
+        },
+        "note": "Returned usage only; requests without usage may still incur provider cost. No currency estimate."
+      }
+    }
+  },
+  "paired": {
+    "n_cases": 99,
+    "case_ids": [
+      "0245df99-2909-465a-861e-7fbca948e82f",
+      "03103341-f9d3-40a8-8435-f7946dd707b3",
+      "05e1f2bd-3498-4fcb-8d43-37c903397ded",
+      "08a0c5cc-41a9-4eb8-b3ea-91d9e26f8bd3",
+      "099a9da4-c8db-4900-ada2-76600f3655a4",
+      "0b16b42c-dea7-4079-a2a8-79eb23447193",
+      "0c577209-47dc-4645-8d10-0b659663a969",
+      "0dd6fbb7-4236-47f7-a69c-30f0836b76c3",
+      "112459f9-10ea-44b5-affa-79008c2977e7",
+      "1267fbd8-54c8-4f2e-8471-b13c4de332c7",
+      "14be9a2b-5559-423b-8362-4dccf306992e",
+      "16e81dcf-9762-4b83-be3e-60a65a15efec",
+      "1a833106-368a-41e4-a36e-32f6b1d36d16",
+      "1ba150cb-3b4a-4f0a-bff0-b448c78608ae",
+      "1c1af35c-a0d7-4fe8-bcd3-baf30862235b",
+      "1c6bfd10-4dcb-4a5c-bb2d-922ff9f20087",
+      "1c8b3d98-ffcf-42b9-ae0b-73d22d87bad7",
+      "1d9c6a43-eeb3-40ec-8617-d09a68fb0fb3",
+      "1f28fed3-bed9-444a-bf2b-3700b516b97f",
+      "1f84888a-bebf-45aa-b8e3-2d9383ff01d3",
+      "21e5c264-df85-4055-a566-ecb65cdd8c63",
+      "29d6b448-a688-4c2f-8f6d-a13546d506d8",
+      "2ff0909b-a8bb-4370-8428-9d355f5c6a67",
+      "33b57a14-f469-405c-8843-f7e8ceb5b1ed",
+      "3bb1c925-71ef-4713-a139-a3be65f8a7a5",
+      "40bf7303-ba39-44fe-b73f-ad3c9743c579",
+      "41cd71cb-cae5-41c8-abe8-67e42fabd4a5",
+      "42657330-bfc5-425d-ae21-396a9ba1fb12",
+      "4596152e-6589-4bf2-9c9f-dd3ed9e8c0dc",
+      "486bdb13-16c5-4a53-8566-a60caaf94a73",
+      "4a4ecf18-e7a3-448a-b8cb-b337ee20048d",
+      "4b2bb9e4-8e28-490b-895f-80da5e7e2815",
+      "4bc70fa1-e817-405f-b113-0919e8e94205",
+      "4e3cc9e2-baf7-449f-bf61-919eb773f29c",
+      "4ee87dc8-2fa1-4c98-828c-9c0c8dd8225f",
+      "4f208b8b-6d5c-4d3f-8df0-cab24d29edda",
+      "4fe76361-f0e3-458f-a3d5-453da3c7cecc",
+      "504c0c6b-7e78-4bfa-ae3f-00f8e59c3693",
+      "5f09e15c-c987-4bdb-ab6e-5db39b18317d",
+      "60383804-a8e5-4e50-8715-da391d76617d",
+      "607cea69-abb5-4055-aa09-117650cb7cc9",
+      "61d28a34-cc8e-46a9-b41d-c95933de2214",
+      "62806bef-eeeb-4892-b4d5-6a8d2005c58d",
+      "673841c2-de8c-4417-bdcc-dc48753a539f",
+      "6803cd71-78a9-4bff-a1a3-1153dcc28c11",
+      "6a326478-2a1b-4e47-b298-53f3ac12ed51",
+      "6e565708-43e2-492b-9f1d-25d51387dcf7",
+      "6f4e562e-91f9-401d-8730-af947985b821",
+      "712d9d7f-d7ee-4554-affa-133449231ae4",
+      "7180c4d1-971b-418d-8a64-87ab0d29c20e",
+      "7f94386a-d032-43cf-9dbe-2b64430c9c28",
+      "82f654ab-fbfe-43f2-a2fe-0001b2ac853f",
+      "8cb94647-b0a8-4b8c-b00a-4788ef522b79",
+      "9326b908-cbe6-41f6-957f-00b84c26bfcc",
+      "942e315d-b494-469c-93df-cd69c88ea2d2",
+      "95936f53-1e60-4bad-9cd2-65831e309768",
+      "9b18e5e4-4873-49bf-b422-c3f5bc5d1f33",
+      "9e3d2edb-6535-4180-9050-ade88dbf798e",
+      "9ebd069a-7703-47b5-9c75-53958637e7c0",
+      "9f57055d-c269-47d7-99be-3525d725439e",
+      "a2b159c8-86d0-4b76-9244-f19cc41d5ad8",
+      "a6372f23-f462-4706-8455-5b350c46d83c",
+      "ab989f1e-bacb-4c37-ab81-c8f24ee3284b",
+      "ad381d87-53a0-4aa1-a1e5-d6d172a905cd",
+      "af97084c-5b72-4fec-be1e-dcab0980b335",
+      "b3a28e48-3912-4b0e-b3a9-d359da13864d",
+      "b4872f0e-9d9e-4259-8b1e-844509b85712",
+      "b49f88ac-b407-41af-a9e7-f5e4cd1f970a",
+      "b7003092-3e6e-4fac-9867-083cac064f89",
+      "b7082615-e6e1-4981-b51b-9259671d1adf",
+      "b7cee0c0-b67d-46b8-bbd1-9f042fe810f5",
+      "bb31a9f4-3465-4a91-aae6-bf70aa6b729f",
+      "bd32af6e-9fae-4968-b3e6-d143f148f5b8",
+      "be5bae8d-bebc-4474-9d28-1cc633be8d8d",
+      "bef473f1-82a1-4359-a2c0-59b6dc2f6abb",
+      "bf159a0f-e6d7-46fa-beea-c231934fa7a9",
+      "c1a354a1-7990-4ca8-9fc5-2fdb1b5df337",
+      "cbfa5c92-41cb-4481-97b2-9fb41298be13",
+      "cc174cb2-520d-49c3-93da-f93a1c485c03",
+      "cdbd410d-170a-426d-b6d2-60dafaffe853",
+      "d311891e-82b9-4a16-ab46-6af92f054f94",
+      "d4f9c67f-00c5-41ed-bde1-c704b92647f7",
+      "d56df06a-8234-4f31-8737-e74fe9d5fa04",
+      "d6dd19a2-c57e-4e4d-b7e1-8919a86f1157",
+      "d7c3103a-c195-4503-ab20-ecae4d4ce419",
+      "db72bae1-ff16-495c-89c7-1cff7c0ae503",
+      "dc2aa3f8-eda0-455b-98dc-adc56089259a",
+      "dc636898-246e-4b08-9978-6a6dc1b20320",
+      "e3486ac5-6d1e-476f-b389-2e6df37f94bd",
+      "ea8737b0-0ff4-4476-b97d-5677d4f526dc",
+      "edf748d4-07cd-4f0b-aad3-01baebbd557b",
+      "eee72e78-71bd-434b-ba74-33888ea5522d",
+      "f0f8088f-46dc-453a-b695-772b30421ece",
+      "f122e4c9-7634-4193-94f9-8623cd75d1f1",
+      "f2f531ff-94d5-4320-8594-7ae5d3a52af5",
+      "f3850ec8-bf7c-42c3-9469-457836914f77",
+      "f45b0783-4325-4b3e-959d-c181971d72f6",
+      "f8027aa8-c193-47c8-a97b-432836093939",
+      "fc552b69-feb8-4951-bf67-725071bf8c8a"
+    ],
+    "step_success_rate_delta": -0.009239603445074232,
+    "element_accuracy_delta": -0.013131373602724613,
+    "operation_f1_delta": 0.0018253952254804722,
+    "task_success_rate_delta": -0.030303030303030304
+  },
+  "training": {
+    "macro": {
+      "element_accuracy": 0.6273995470229687,
+      "operation_f1": 0.848568393629069,
+      "step_success_rate": 0.5708765482905912,
+      "task_success_rate": 0.07718120805369127,
+      "candidate_recall": 0.947875385148901,
+      "n_cases": 298,
+      "n_steps": 2258
+    },
+    "scored": 298,
+    "scheduled": 303,
+    "unscored": 5,
+    "steps": 2258,
+    "correct_steps": 1233.0,
+    "micro_step_sr": 0.546058458813109,
+    "strict_successes": 23.0,
+    "observed_strict_success_over_scheduled": 0.07590759075907591,
+    "processed": 303,
+    "failed": 5,
+    "memory_entries": 298,
+    "memory_items": 865,
+    "usage": {
+      "requests": {
+        "solve": 2360,
+        "judge": 309,
+        "extract": 302
+      },
+      "responses": {
+        "solve": 2322,
+        "judge": 301,
+        "extract": 301
+      },
+      "errors": {
+        "APITimeoutError": 46,
+        "InternalServerError": 1
+      },
+      "returned_usage_by_phase": {
+        "solve": {
+          "prompt_tokens": 5641714,
+          "completion_tokens": 4452000,
+          "total_tokens": 10093714
+        },
+        "judge": {
+          "prompt_tokens": 4728663,
+          "completion_tokens": 1413875,
+          "total_tokens": 6142538
+        },
+        "extract": {
+          "prompt_tokens": 4780824,
+          "completion_tokens": 924432,
+          "total_tokens": 5705256
+        }
+      },
+      "note": "Returned usage only; requests without usage may still incur provider cost. No currency estimate."
+    }
+  },
+  "interpretation": "Macro metrics on fully predicted cases; report coverage and paired common cases. Validation only, not final test performance."
+}

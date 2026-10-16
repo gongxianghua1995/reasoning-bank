@@ -1,0 +1,63 @@
+{
+  "common_cases": 99,
+  "counts": {
+    "tasks_equal": 58,
+    "task_success_g0_n0": 83,
+    "both_wrong": 307,
+    "candidate_missing": 48,
+    "global_invalid": 0,
+    "global_error_candidate_missing": 48,
+    "none_invalid": 0,
+    "none_error_candidate_missing": 48,
+    "same_action": 621,
+    "both_correct": 358,
+    "global_error_element_only": 178,
+    "none_error_element_only": 173,
+    "tasks_down": 23,
+    "task_success_g0_n1": 5,
+    "loss": 42,
+    "none_error_element_and_operation": 63,
+    "gain": 38,
+    "global_error_operation_only": 60,
+    "none_error_operation_only": 61,
+    "global_error_element_and_operation": 63,
+    "tasks_up": 18,
+    "task_success_g1_n1": 9,
+    "task_success_g1_n0": 2
+  },
+  "integrity": {
+    "identical_public_observations": 101,
+    "same_website_retrieval": 13,
+    "global_requests": 793,
+    "memory_in_request": 793
+  },
+  "training_self_judgment_confusion": {
+    "fail/gold_0": 138,
+    "fail/gold_1": 2,
+    "success/gold_0": 137,
+    "success/gold_1": 21
+  },
+  "unique_retrieved_episodes": 37,
+  "retrieved_self_judgment": {
+    "success": 75,
+    "fail": 26
+  },
+  "paired_step_sr_delta": -0.009239603445074237,
+  "paired_bootstrap95_ci": [
+    -0.03609388074863058,
+    0.017642857994860303
+  ],
+  "bootstrap_seed": 42,
+  "bootstrap_resamples": 10000,
+  "same_website": {
+    "True": {
+      "n": 13,
+      "delta": 0.05077838827838828
+    },
+    "False": {
+      "n": 86,
+      "delta": -0.01831209056606276
+    }
+  },
+  "retrieved_gold_success_tasks": 36
+}

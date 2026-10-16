@@ -1,0 +1,579 @@
+{
+  "captured_at_utc": "2026-10-16T01:16:46.465831+00:00",
+  "run": "outputs/mind2web/two_protocols_20261015T085651Z",
+  "sources": {
+    "outputs/mind2web/two_protocols_20261015T085651Z/status.json": {
+      "sha256": "d2cb77cdf061f718d281314c5f651d7925b3f61ed7fb016d92a824aa99f273c7",
+      "data": {
+        "status": "running",
+        "started": 1792054645.7030458,
+        "updated": 1792113397.096143,
+        "elapsed_seconds": 58751.3930978775,
+        "pid": 555202,
+        "active": {
+          "aligned_train": {
+            "pid": 555212,
+            "progress": {
+              "status": "running",
+              "started": 1792054647.221473,
+              "mode": "aligned_train",
+              "phase": "solve",
+              "completed": 463,
+              "processed": 481,
+              "elapsed_seconds": 58744.23,
+              "updated": 1792113391.4476218,
+              "epoch": 2,
+              "batch": 23,
+              "failed": 18
+            }
+          },
+          "paper_test_task": {
+            "pid": 555213,
+            "progress": {
+              "status": "running",
+              "started": 1792054646.677463,
+              "mode": "stream",
+              "phase": "solve",
+              "completed": 148,
+              "elapsed_seconds": 58744.67,
+              "updated": 1792113391.3486247,
+              "active": "9c14e1b7-2015-434a-a8a1-b1e782d0a2e2",
+              "epoch": 1,
+              "step": 3,
+              "total_steps": 3,
+              "processed": 156,
+              "failed": 9
+            }
+          },
+          "paper_test_website": {
+            "pid": 555214,
+            "progress": {
+              "status": "running",
+              "started": 1792054646.6376662,
+              "mode": "stream",
+              "phase": "solve",
+              "completed": 126,
+              "elapsed_seconds": 58744.62,
+              "updated": 1792113391.256386,
+              "active": "c474e2a6-9228-49d1-8c5b-02ca5ceb9c18",
+              "epoch": 1,
+              "step": 4,
+              "total_steps": 13,
+              "processed": 131,
+              "failed": 5
+            }
+          },
+          "paper_test_domain": {
+            "pid": 555215,
+            "progress": {
+              "status": "running",
+              "started": 1792054646.9681933,
+              "mode": "stream",
+              "phase": "solve",
+              "completed": 188,
+              "elapsed_seconds": 58744.38,
+              "updated": 1792113391.3527958,
+              "active": "349f5f06-acda-4d1c-8569-c97a31c6107c",
+              "epoch": 1,
+              "step": 6,
+              "total_steps": 15,
+              "processed": 194,
+              "failed": 6
+            }
+          },
+          "none_test_task_04": {
+            "pid": 954019,
+            "progress": {
+              "status": "running",
+              "started": 1792105777.1957617,
+              "mode": "eval",
+              "phase": "solve",
+              "completed": 22,
+              "elapsed_seconds": 7611.2,
+              "updated": 1792113388.3979356,
+              "active": "bf7321eb-fb52-4440-8a5f-157114d935e9",
+              "epoch": 1,
+              "step": 6,
+              "total_steps": 7,
+              "processed": 23,
+              "failed": 1
+            }
+          }
+        },
+        "done": [
+          "none_validation_00",
+          "none_validation_01",
+          "none_validation_02",
+          "none_validation_03",
+          "none_validation_04",
+          "none_validation_05",
+          "none_validation_06",
+          "none_validation_07",
+          "none_test_task_00",
+          "none_test_task_01",
+          "none_test_task_02",
+          "none_test_task_03"
+        ],
+        "failed": {},
+        "blocked": [],
+        "pending": 60,
+        "expected_episodes": 4932,
+        "processed": 1212
+      }
+    },
+    "outputs/mind2web/two_protocols_20261015T085651Z/comparison.json": {
+      "sha256": "dc386731ea4eb50b23adde6aba5a4077b14a26b110285dd0ed9def4aa145f7dc",
+      "data": {
+        "updated": 1792113397.0937738,
+        "groups": {
+          "aligned_train/train": {
+            "scheduled": 606,
+            "processed": 479,
+            "scored": 463,
+            "failed": 18,
+            "complete": false,
+            "metrics": {
+              "element_accuracy": 0.6752762295545413,
+              "operation_f1": 0.8649634104354144,
+              "step_success_rate": 0.6238071754796753,
+              "task_success_rate": 0.11663066954643629,
+              "candidate_recall": 0.9484262281400677,
+              "n_cases": 463,
+              "n_steps": 3428
+            }
+          },
+          "paper/test_task": {
+            "scheduled": 252,
+            "processed": 156,
+            "scored": 148,
+            "failed": 9,
+            "complete": false,
+            "metrics": {
+              "element_accuracy": 0.6192441002619021,
+              "operation_f1": 0.7990787012946732,
+              "step_success_rate": 0.557002446727679,
+              "task_success_rate": 0.060810810810810814,
+              "candidate_recall": 0.9009440456808878,
+              "n_cases": 148,
+              "n_steps": 1098
+            }
+          },
+          "paper/test_website": {
+            "scheduled": 177,
+            "processed": 131,
+            "scored": 126,
+            "failed": 5,
+            "complete": false,
+            "metrics": {
+              "element_accuracy": 0.5926615297763758,
+              "operation_f1": 0.7420227962075256,
+              "step_success_rate": 0.5099007830275337,
+              "task_success_rate": 0.07936507936507936,
+              "candidate_recall": 0.8533360199384943,
+              "n_cases": 126,
+              "n_steps": 976
+            }
+          },
+          "paper/test_domain": {
+            "scheduled": 912,
+            "processed": 194,
+            "scored": 188,
+            "failed": 6,
+            "complete": false,
+            "metrics": {
+              "element_accuracy": 0.6038303750964725,
+              "operation_f1": 0.7653840867923115,
+              "step_success_rate": 0.5406805058820736,
+              "task_success_rate": 0.0797872340425532,
+              "candidate_recall": 0.8684170171467204,
+              "n_cases": 188,
+              "n_steps": 1178
+            }
+          },
+          "validation_epoch1/validation": {
+            "scheduled": 101,
+            "processed": 0,
+            "scored": 0,
+            "failed": 0,
+            "complete": false,
+            "metrics": {
+              "n_cases": 0,
+              "n_steps": 0
+            }
+          },
+          "validation_epoch2/validation": {
+            "scheduled": 101,
+            "processed": 0,
+            "scored": 0,
+            "failed": 0,
+            "complete": false,
+            "metrics": {
+              "n_cases": 0,
+              "n_steps": 0
+            }
+          },
+          "aligned/test_task": {
+            "scheduled": 252,
+            "processed": 0,
+            "scored": 0,
+            "failed": 0,
+            "complete": false,
+            "metrics": {
+              "n_cases": 0,
+              "n_steps": 0
+            }
+          },
+          "aligned/test_website": {
+            "scheduled": 177,
+            "processed": 0,
+            "scored": 0,
+            "failed": 0,
+            "complete": false,
+            "metrics": {
+              "n_cases": 0,
+              "n_steps": 0
+            }
+          },
+          "aligned/test_domain": {
+            "scheduled": 912,
+            "processed": 0,
+            "scored": 0,
+            "failed": 0,
+            "complete": false,
+            "metrics": {
+              "n_cases": 0,
+              "n_steps": 0
+            }
+          },
+          "none/validation": {
+            "scheduled": 101,
+            "processed": 101,
+            "scored": 99,
+            "failed": 2,
+            "complete": true,
+            "metrics": {
+              "element_accuracy": 0.6307481648635073,
+              "operation_f1": 0.8312278151242655,
+              "step_success_rate": 0.5695848378450343,
+              "task_success_rate": 0.13131313131313133,
+              "candidate_recall": 0.9397180014637195,
+              "n_cases": 99,
+              "n_steps": 741
+            }
+          },
+          "none/test_task": {
+            "scheduled": 252,
+            "processed": 151,
+            "scored": 146,
+            "failed": 5,
+            "complete": false,
+            "metrics": {
+              "element_accuracy": 0.6177769007137831,
+              "operation_f1": 0.8094061804653655,
+              "step_success_rate": 0.5611295389466644,
+              "task_success_rate": 0.08904109589041095,
+              "candidate_recall": 0.9026181375901996,
+              "n_cases": 146,
+              "n_steps": 1221
+            }
+          },
+          "none/test_website": {
+            "scheduled": 177,
+            "processed": 0,
+            "scored": 0,
+            "failed": 0,
+            "complete": false,
+            "metrics": {
+              "n_cases": 0,
+              "n_steps": 0
+            }
+          },
+          "none/test_domain": {
+            "scheduled": 912,
+            "processed": 0,
+            "scored": 0,
+            "failed": 0,
+            "complete": false,
+            "metrics": {
+              "n_cases": 0,
+              "n_steps": 0
+            }
+          }
+        },
+        "paired": {
+          "paper/test_task": {
+            "n_common": 93,
+            "step_sr_delta": 0.021437186048191732
+          },
+          "paper/test_website": {
+            "n_common": 0,
+            "step_sr_delta": null
+          },
+          "paper/test_domain": {
+            "n_common": 0,
+            "step_sr_delta": null
+          },
+          "aligned/test_task": {
+            "n_common": 0,
+            "step_sr_delta": null
+          },
+          "aligned/test_website": {
+            "n_common": 0,
+            "step_sr_delta": null
+          },
+          "aligned/test_domain": {
+            "n_common": 0,
+            "step_sr_delta": null
+          }
+        },
+        "failed_jobs": {},
+        "selection": null,
+        "interpretation": "A and B differ in data/feedback/protocol; compare each with its matched no-memory control. Partial metrics require coverage."
+      }
+    },
+    "outputs/mind2web/two_protocols_20261015T085651Z/usage.json": {
+      "sha256": "5af89fc38e253d9c23c35abbc0ebf525d9bf05093c94c920fee1e3c695eb60e8",
+      "data": {
+        "none_validation_00": {
+          "requests": {
+            "solve": 115
+          },
+          "errors": {
+            "APITimeoutError": 2
+          },
+          "returned_usage_by_phase": {
+            "solve": {
+              "prompt_tokens": 242795,
+              "completion_tokens": 209088,
+              "total_tokens": 451883
+            }
+          },
+          "note": "Failed requests may incur provider charges without returned usage."
+        },
+        "none_validation_01": {
+          "requests": {
+            "solve": 98
+          },
+          "errors": {
+            "APITimeoutError": 2
+          },
+          "returned_usage_by_phase": {
+            "solve": {
+              "prompt_tokens": 198249,
+              "completion_tokens": 201335,
+              "total_tokens": 399584
+            }
+          },
+          "note": "Failed requests may incur provider charges without returned usage."
+        },
+        "none_validation_02": {
+          "requests": {
+            "solve": 141
+          },
+          "errors": {
+            "APITimeoutError": 2
+          },
+          "returned_usage_by_phase": {
+            "solve": {
+              "prompt_tokens": 322599,
+              "completion_tokens": 273940,
+              "total_tokens": 596539
+            }
+          },
+          "note": "Failed requests may incur provider charges without returned usage."
+        },
+        "none_validation_03": {
+          "requests": {
+            "solve": 95
+          },
+          "errors": {
+            "APITimeoutError": 5
+          },
+          "returned_usage_by_phase": {
+            "solve": {
+              "prompt_tokens": 184709,
+              "completion_tokens": 157414,
+              "total_tokens": 342123
+            }
+          },
+          "note": "Failed requests may incur provider charges without returned usage."
+        },
+        "none_validation_04": {
+          "requests": {
+            "solve": 102
+          },
+          "errors": {
+            "APITimeoutError": 2
+          },
+          "returned_usage_by_phase": {
+            "solve": {
+              "prompt_tokens": 220938,
+              "completion_tokens": 196084,
+              "total_tokens": 417022
+            }
+          },
+          "note": "Failed requests may incur provider charges without returned usage."
+        },
+        "none_validation_05": {
+          "requests": {
+            "solve": 76
+          },
+          "errors": {
+            "APITimeoutError": 1
+          },
+          "returned_usage_by_phase": {
+            "solve": {
+              "prompt_tokens": 155308,
+              "completion_tokens": 121305,
+              "total_tokens": 276613
+            }
+          },
+          "note": "Failed requests may incur provider charges without returned usage."
+        },
+        "none_validation_06": {
+          "requests": {
+            "solve": 92
+          },
+          "errors": {
+            "APITimeoutError": 4
+          },
+          "returned_usage_by_phase": {
+            "solve": {
+              "prompt_tokens": 197408,
+              "completion_tokens": 134216,
+              "total_tokens": 331624
+            }
+          },
+          "note": "Failed requests may incur provider charges without returned usage."
+        },
+        "none_validation_07": {
+          "requests": {
+            "solve": 90
+          },
+          "errors": {
+            "APITimeoutError": 2
+          },
+          "returned_usage_by_phase": {
+            "solve": {
+              "prompt_tokens": 194258,
+              "completion_tokens": 169114,
+              "total_tokens": 363372
+            }
+          },
+          "note": "Failed requests may incur provider charges without returned usage."
+        },
+        "none_test_task_00": {
+          "requests": {
+            "solve": 330
+          },
+          "errors": {
+            "APITimeoutError": 10,
+            "RateLimitError": 14,
+            "InternalServerError": 1
+          },
+          "returned_usage_by_phase": {
+            "solve": {
+              "prompt_tokens": 678382,
+              "completion_tokens": 644025,
+              "total_tokens": 1322407
+            }
+          },
+          "note": "Failed requests may incur provider charges without returned usage."
+        },
+        "none_test_task_01": {
+          "requests": {
+            "solve": 255
+          },
+          "errors": {
+            "APITimeoutError": 4,
+            "RateLimitError": 2
+          },
+          "returned_usage_by_phase": {
+            "solve": {
+              "prompt_tokens": 539708,
+              "completion_tokens": 418155,
+              "total_tokens": 957863
+            }
+          },
+          "note": "Failed requests may incur provider charges without returned usage."
+        },
+        "none_test_task_02": {
+          "requests": {
+            "solve": 276
+          },
+          "errors": {
+            "APITimeoutError": 8
+          },
+          "returned_usage_by_phase": {
+            "solve": {
+              "prompt_tokens": 606499,
+              "completion_tokens": 559817,
+              "total_tokens": 1166316
+            }
+          },
+          "note": "Failed requests may incur provider charges without returned usage."
+        },
+        "none_test_task_03": {
+          "requests": {
+            "solve": 267
+          },
+          "errors": {
+            "APITimeoutError": 12,
+            "RateLimitError": 1
+          },
+          "returned_usage_by_phase": {
+            "solve": {
+              "prompt_tokens": 534555,
+              "completion_tokens": 553800,
+              "total_tokens": 1088355
+            }
+          },
+          "note": "Failed requests may incur provider charges without returned usage."
+        }
+      }
+    },
+    "outputs/mind2web/two_protocols_20261015T085651Z/aligned_train/case_outcomes.json": {
+      "sha256": "6248dc19e6bf993c5371ca8892241cea41bddf9512abf1a203af6c756863dacb",
+      "rows": 479,
+      "by_epoch": {
+        "epoch-1": 303,
+        "epoch-2": 176
+      }
+    },
+    "outputs/mind2web/two_protocols_20261015T085651Z/aligned_train/results.json": {
+      "sha256": "92bd4aa0503b1640b083d6479cc079b8350e5d661113c450bf37616e7a018450",
+      "rows": 463,
+      "by_epoch": {
+        "epoch-1": 293,
+        "epoch-2": 170
+      }
+    },
+    "outputs/mind2web/two_protocols_20261015T085651Z/aligned_train/failures.json": {
+      "sha256": "66515d90b8746b7c14ddc0713811f10cabb3857f54e97b40c7aa6511e8c3c478",
+      "rows": 18,
+      "by_epoch": {
+        "epoch-1": 11,
+        "epoch-2": 7
+      }
+    },
+    "outputs/mind2web/two_protocols_20261015T085651Z/aligned_train/checkpoints/epoch_1/summary.json": {
+      "sha256": "0f1ff1bf01f92a0b63cc04143a882f9994dc3a25517cf0e64bdc2d381a25442e",
+      "data": {
+        "epoch": 1,
+        "memory_entries": 292,
+        "memory_sha256": "35c21e06f2a4e27cf0a1209c0a427afca7964b8a900e913c86332573236c4ca0",
+        "metrics": {
+          "element_accuracy": 0.6235838876873994,
+          "operation_f1": 0.84313030070197,
+          "step_success_rate": 0.5680913142671318,
+          "task_success_rate": 0.06484641638225255,
+          "candidate_recall": 0.9474601246037969,
+          "n_cases": 293,
+          "n_steps": 2156
+        }
+      }
+    }
+  },
+  "note": "Sequential read snapshot; each source has its own update time. Progress uses comparison.json committed outcomes, not overlapping scored+failed counters.",
+  "publication_note": "Aggregated snapshot. Full per-task training rows are retained locally; their hashes and epoch counts are included here."
+}
