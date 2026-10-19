@@ -13,7 +13,9 @@ from tempfile import TemporaryDirectory
 
 from swarmevo.benches.mind2web.dataset import (
     DOM_IDENTITY,
+    INVENTORY_VERSION,
     OFFICIAL_COUNTS,
+    OFFICIAL_STEPS,
     file_hash,
     load_inventory,
     partition_inventory,
@@ -21,47 +23,44 @@ from swarmevo.benches.mind2web.dataset import (
     read_case,
     write_json,
 )
-
-
-def official_sources(data_root: Path, *, diagnostic: bool = False) -> dict[str, str]:
-    source = data_root / "data" if (data_root / "data").is_dir() else data_root
-    files = {}
-    for split in OFFICIAL_COUNTS:
-        paths = sorted((source / split).glob("*.json"))
-        if not paths and not diagnostic:
-            raise FileNotFoundError(f"missing official split {split}; provide --data-root")
-        files.update({str(path.relative_to(data_root)): file_hash(path) for path in paths})
-    if not files:
-        raise FileNotFoundError(f"no official Mind2Web JSON files in {data_root}")
-    return files
+from swarmevo.benches.mind2web.source import (
+    DATASET_REVISION,
+    DATASET_SOURCE,
+    action_rows,
+    official_sources,
+    row_metadata,
+    validate_step_identity,
+)
 
 
 def export_partition(data_root: Path, seed: int, *, diagnostic: bool = False) -> dict:
-    """Read official metadata without converting webpages or loading candidate ranks."""
-    import ijson
-
+    """Read published metadata columns without HTML, screenshots or candidate ranks."""
     files = official_sources(data_root, diagnostic=diagnostic)
     tasks = {}
-    for name in files:
-        split = Path(name).parent.name
-        with (data_root / name).open("rb") as stream:
-            for task in ijson.items(stream, "item"):
-                task_id = task["annotation_id"]
-                if task_id in tasks:
-                    raise ValueError(f"duplicate annotation_id: {task_id}")
-                tasks[task_id] = {
-                    "annotation_id": task_id,
-                    "website": task["website"],
-                    "official_split": split,
-                }
+    for split, _name, row in action_rows(data_root, files, metadata_only=True):
+        validate_step_identity(row)
+        task_id = row["annotation_id"]
+        entry = tasks.setdefault(task_id, {**row_metadata(row), "official_split": split,
+                                          "step_ids": []})
+        if (row_metadata(row) != {key: entry[key] for key in row_metadata(row)}
+                or entry["official_split"] != split):
+            raise ValueError(f"{task_id}: inconsistent metadata or split")
+        entry["step_ids"].append([row["target_action_index"], row["action_uid"]])
+    for task_id, entry in tasks.items():
+        steps = entry["step_ids"]
+        if len({s[0] for s in steps}) != len(steps) or len({s[1] for s in steps}) != len(steps):
+            raise ValueError(f"{task_id}: duplicate published step")
+        steps.sort()
     if not any(item["official_split"] == "train" for item in tasks.values()):
         raise ValueError("train is empty")
     if not diagnostic:
         for split, count in OFFICIAL_COUNTS.items():
-            actual = sum(item["official_split"] == split for item in tasks.values())
-            if actual != count:
-                raise ValueError(f"{split}: expected {count} tasks, got {actual}")
-    manifest = partition_inventory({"tasks": tasks, "source_files": files}, seed)
+            selected = [t for t in tasks.values() if t["official_split"] == split]
+            if len(selected) != count or sum(len(t["step_ids"]) for t in selected) != OFFICIAL_STEPS[split]:
+                raise ValueError(f"{split}: expected {count} tasks and published step inventory")
+    manifest = partition_inventory({"tasks": tasks, "source_files": files,
+        "source_repository": DATASET_SOURCE, "source_revision": DATASET_REVISION,
+        "step_ids": {key: value["step_ids"] for key, value in sorted(tasks.items())}}, seed)
     manifest.pop("tasks")
     return manifest
 
@@ -73,16 +72,12 @@ def ensure_cache(
     data_root = data_root.resolve()
     ranks_file = trusted_official_pickle.resolve()
     source_files = official_sources(data_root, diagnostic=diagnostic)
-    metadata_path = data_root / "download-manifest.json"
-    if not metadata_path.exists():
-        metadata_path = data_root / "prefetch-revision.json"
-    metadata = json.loads(metadata_path.read_text()) if metadata_path.exists() else {}
     identity = {
         "source_files": source_files,
-        "source_repository": metadata.get("repository"),
-        "source_revision": metadata.get("revision"),
+        "source_repository": DATASET_SOURCE,
+        "source_revision": DATASET_REVISION,
         "ranks_sha256": file_hash(ranks_file),
-        "conversion": {"version": 4, "observation": DOM_IDENTITY, "top_k": 50},
+        "conversion": {"version": INVENTORY_VERSION, "observation": DOM_IDENTITY, "top_k": 50},
         "diagnostic": diagnostic,
     }
     key = hashlib.sha256(json.dumps(identity, sort_keys=True).encode()).hexdigest()
@@ -96,9 +91,18 @@ def ensure_cache(
                 manifest, parts = load_inventory(target)
                 if manifest.get("cache_identity") != identity:
                     raise ValueError("cache identity changed")
+                checked_images = set()
                 for cases in parts.values():
                     for case in cases:
-                        read_case(case)
+                        task = read_case(case)
+                        for step in task["steps"]:
+                            image = step["image"]
+                            if image is None:
+                                continue
+                            if image["path"] not in checked_images:
+                                if file_hash(Path(image["path"])) != image["sha256"]:
+                                    raise ValueError("cached screenshot changed")
+                                checked_images.add(image["path"])
             except (ValueError, KeyError, OSError, TypeError, AttributeError) as error:
                 logger.warning("mind2web_cache rebuild=%s reason=%s", key, error)
             else:

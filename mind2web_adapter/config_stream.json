@@ -1,7 +1,7 @@
 {
   "model": "DeepSeek-V4-Flash-0731",
-  "temperature": 0.7,
-  "max_tokens": 16384,
+  "temperature": 0.0,
+  "max_tokens": 64000,
   "api_timeout": 180,
   "timeout_recoveries": 2,
   "case_seconds": 1200,
@@ -19,8 +19,17 @@
   "paper_deviations": [
     "DeepSeek-V4-Flash-0731 replaces Gemini-2.5 used in the paper Mind2Web table.",
     "Local BGE-small with plain queries replaces gemini-embedding-001; no Gemini credentials configured.",
-    "SwarmEvolution shared compact DOM/top50 candidates/scorer and 1200-second action budget retained.",
     "Fixed seed42 manifest split order; original Mind2Web ordering and cross-split memory initialization are not publicly executable here.",
-    "Explicit per-item applicability decisions are logged as short JSON fields; offline causal-evidence guard added."
-  ]
+    "Explicit per-item applicability decisions are logged as short JSON fields; offline causal-evidence guard added.",
+    "Unified Multimodal-Mind2Web snapshot, actor temperature 0, thinking enabled, output cap 64000; self-judged streaming."
+  ],
+  "learning_max_tokens": 50000,
+  "input_mode": "text",
+  "thinking": {
+    "type": "enabled"
+  },
+  "protocol_version": "swarm-90b6cd5-v1",
+  "request_interval": 3.0,
+  "request_attempts": 5,
+  "reference_actions": false
 }

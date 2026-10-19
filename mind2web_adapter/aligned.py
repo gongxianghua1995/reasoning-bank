@@ -23,10 +23,12 @@ def epoch_order(cases, seed, epoch):
 
 
 def identity(manifest, config):
+    from .protocol import execution_identity
     return {'split_sha256': manifest['split_sha256'],
             'data_identity': digest(json.dumps(manifest['cache_identity'], sort_keys=True)),
             'embedding_model': config['embedding_model'], 'model': config['model'],
-            'retrieval': 'web-query-cosine-top1-plain-v2', 'feedback_source': 'official'}
+            'retrieval': 'web-query-cosine-top1-plain-v2', 'feedback_source': 'official',
+            **execution_identity(config)}
 
 
 def commit_batch(bank, path, entries, before):
@@ -68,6 +70,12 @@ def execute(out):
         if manifest['diagnostic']:
             raise ValueError('Full official inventory required')
         cases = parts['train']
+        if options.get('case_ids_file'):
+            selected = load(options['case_ids_file'])
+            if (not selected or len(set(selected)) != len(selected) or
+                    not set(selected) <= {c.id for c in cases} or options.get('max_cases')):
+                raise ValueError('Explicit training IDs must be a unique subset of train, without max_cases')
+            cases = [c for c in cases if c.id in set(selected)]
         if options.get('max_cases'):
             cases = cases[:options['max_cases']]
         cache = Path(options['embedding_cache'])
@@ -124,7 +132,7 @@ def execute(out):
                         case = by_id[cid]
                         folder = out/'cases'/f"{ep['epoch']:02d}_{digest(cid)[:16]}"
                         folder.mkdir(parents=True, exist_ok=True)
-                        public = public_case(read_case(case))
+                        public = public_case(read_case(case), config.get('input_mode', 'text'))
                         selected, text, vector, scores = snapshot_bank.select(cid, case.family_id, public['task'])
                         retrieval = {'episode_ids': selected, 'selected_memory': text, 'scores': scores,
                                      'memory_before_sha256': file_hash(before_file), 'scope': 'global'}
@@ -144,12 +152,26 @@ def execute(out):
                             for name, sha in receipt.get('hashes',{}).items():
                                 if file_hash(folder/name) != sha:
                                     raise ValueError('Completed action artifact changed')
-                            return receipt
+                            if receipt['status'] == 'complete' or not config.get('strict_training'):
+                                return receipt
                         cp = Progress(folder, phase='solve', active=case.id)
                         try:
-                            partial = load(folder/'predictions_local.json') if (folder/'predictions_local.json').exists() else []
-                            previous = load(folder/'execution_checkpoint.json')['elapsed_seconds'] if (folder/'execution_checkpoint.json').exists() else 0
-                            predictions = act(public,config,folder,text,cp,resume_steps=len(partial),previous_elapsed=previous)
+                            for attempt in range(config.get('case_attempts', 1)):
+                                partial = load(folder/'predictions_local.json') if (folder/'predictions_local.json').exists() else []
+                                previous = load(folder/'execution_checkpoint.json')['elapsed_seconds'] if (folder/'execution_checkpoint.json').exists() else 0
+                                # Infrastructure recovery gets a fresh time window, but completed
+                                # predictions and the batch-start memory cannot change.
+                                if attempt or (folder/'failure.json').exists(): previous = 0
+                                try:
+                                    predictions = act(public,config,folder,text,cp,resume_steps=len(partial),previous_elapsed=previous)
+                                    break
+                                except Exception as exc:
+                                    if not recoverable_case_error(exc) or attempt + 1 == config.get('case_attempts', 1):
+                                        raise
+                                    history = load(folder/'trajectory.json') if (folder/'trajectory.json').exists() else []
+                                    write_json(folder/'action_recovery'/f'{len(list((folder/"action_recovery").glob("*.json")))+1:03d}.json',
+                                        {'error':type(exc).__name__,'trajectory':history,'completed_predictions':load(folder/'predictions_local.json') if (folder/'predictions_local.json').exists() else []})
+                                    event(folder,'training_action_recovery',attempt=attempt+1,error=type(exc).__name__)
                             original = original_predictions(predictions, read_case(case))
                             metrics = score_case(original,read_case(case))
                             write_json(folder/'predictions.json',original)
@@ -178,10 +200,21 @@ def execute(out):
                             saved = load(folder/'learn_receipt.json')
                             if saved['status']=='complete' and file_hash(folder/'memory_entry.json') != saved['sha256']:
                                 raise ValueError('Learned memory changed')
-                            return saved
+                            if saved['status'] == 'complete' or not config.get('strict_training'):
+                                return saved
                         cp = Progress(folder,phase='learning',active=case.id)
                         try:
-                            entry = learn(public,folder,config,vector,episode,metrics=load(folder/'metrics.json'))
+                            metrics = load(folder/'metrics.json')
+                            from .protocol import reference_actions
+                            refs = reference_actions(case, read_case(case), metrics, set(by_id)) if config.get('reference_actions') else None
+                            for attempt in range(config.get('case_attempts', 1)):
+                                try:
+                                    entry = learn(public,folder,config,vector,episode,metrics=metrics,reference_actions=refs)
+                                    break
+                                except Exception as exc:
+                                    if not recoverable_case_error(exc, learning=True) or attempt + 1 == config.get('case_attempts', 1):
+                                        raise
+                                    event(folder,'training_extraction_recovery',attempt=attempt+1,error=type(exc).__name__)
                             saved = {'status':'complete','sha256':file_hash(folder/'memory_entry.json')}
                         except Exception as exc:
                             if not options['continue_case_errors'] or not recoverable_case_error(exc,learning=True):
@@ -193,6 +226,8 @@ def execute(out):
                         write_json(folder/'learn_receipt.json',saved)
                         return saved
                     learned = parallel(extract, list(zip(prepared,solved)),options['workers'])
+                    if config.get('strict_training') and any(r['status'] != 'complete' for r in learned):
+                        raise RuntimeError('Unresolved batch failure; successful receipts retained, no memory committed; resume to retry')
                     batch_rows, batch_failures, entries = [], [], []
                     for item, solve_result, learn_result in zip(prepared,solved,learned,strict=True):
                         case, folder, public, text, vector, selected = item
@@ -260,6 +295,7 @@ def main():
     p.add_argument('--batch-size',type=int,default=8)
     p.add_argument('--workers',type=int,default=4)
     p.add_argument('--max-cases',type=int)
+    p.add_argument('--case-ids-file',type=Path)
     p.add_argument('--continue-case-errors',action='store_true')
     p.add_argument('--resume',action='store_true')
     p.add_argument('--frozen',action='store_true')
@@ -281,8 +317,12 @@ def main():
         write_json(out/'config.json',load(a.config))
         options={k:str(v.resolve()) if isinstance(v,Path) else v for k,v in vars(a).items()
                  if k not in {'config','env_file','resume','frozen'}}
+        if a.case_ids_file:
+            write_json(out/'selected_case_ids.json',load(a.case_ids_file))
+            options['case_ids_file']=str(out/'selected_case_ids.json')
         write_json(out/'options.json',options)
-        write_json(out/'input_hashes.json',{n:file_hash(out/n) for n in ['config.json','options.json']})
+        inputs=['config.json','options.json']+(['selected_case_ids.json'] if a.case_ids_file else [])
+        write_json(out/'input_hashes.json',{n:file_hash(out/n) for n in inputs})
     frozen=out/'source_at_run'
     os.environ['PYTHONPATH']=str(frozen);os.chdir(frozen)
     os.execv(sys.executable,[sys.executable,'-u','-m','mind2web_adapter.aligned','--frozen','--output',str(out)])

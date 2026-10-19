@@ -10,7 +10,9 @@ from pathlib import Path
 
 from swarmevo.benches.protocol import Case
 
-OFFICIAL_COUNTS = {"train": 1009, "test_task": 252, "test_website": 177, "test_domain": 912}
+OFFICIAL_COUNTS = {"train": 1009, "test_task": 177, "test_website": 142, "test_domain": 694}
+OFFICIAL_STEPS = {"train": 7775, "test_task": 1339, "test_website": 1019, "test_domain": 4060}
+INVENTORY_VERSION = 6
 LABEL_ATTRIBUTES = {"is_original_target", "is_top_level_target", "is_target", "data-positive"}
 
 
@@ -127,11 +129,16 @@ def compact_observation(text: str, candidate_ids: list[str]) -> tuple[dict, dict
 
 def normalize_task(task: dict, ranks: dict, top_k: int = 50) -> dict:
     history = task["action_reprs"]
-    if not task["actions"] or len(history) != len(task["actions"]):
+    if not task["actions"]:
         raise ValueError(f"{task['annotation_id']}: invalid annotated action sequence")
     steps = []
     for index, action in enumerate(task["actions"]):
+        index = action.get("target_action_index", index)
+        if type(index) is not int or not 0 <= index < len(history):
+            raise ValueError("invalid target_action_index")
         sample_id = f"{task['annotation_id']}_{action['action_uid']}"
+        if sample_id not in ranks:
+            raise ValueError(f"{sample_id}: missing official candidate ranks")
         order = ranks[sample_id]
         candidates = {}
         for item in action["pos_candidates"] + action["neg_candidates"]:
@@ -166,6 +173,8 @@ def normalize_task(task: dict, ranks: dict, top_k: int = 50) -> dict:
         steps.append(
             {
                 "action_uid": action["action_uid"],
+                "target_action_index": index,
+                **({"image": action["image"]} if "image" in action else {}),
                 "observation": {
                     "task": task["confirmed_task"],
                     "previous_actions": history[:index],
@@ -193,63 +202,95 @@ def normalize_task(task: dict, ranks: dict, top_k: int = 50) -> dict:
 def prepare(
     data_root: Path, ranks_file: Path, output: Path, seed: int = 42, *, diagnostic: bool = False
 ) -> dict:
-    import ijson
+    from tempfile import TemporaryDirectory
+
+    from swarmevo.benches.mind2web.source import (
+        DATASET_REVISION,
+        DATASET_SOURCE,
+        action_rows,
+        official_sources,
+        row_metadata,
+        validate_step_identity,
+    )
 
     if (output / "manifest.json").exists():
         raise FileExistsError("prepared inventory already exists; use a new directory")
     ranks = json.loads(ranks_file.read_text(encoding="utf-8"))["ranks"]
-    source_root = data_root / "data" if (data_root / "data").exists() else data_root
-    tasks, source_files, split_ids = {}, {}, {}
-    for split in OFFICIAL_COUNTS:
-        paths = sorted((source_root / split).glob("*.json"))
-        if not paths and not diagnostic:
-            raise FileNotFoundError(f"missing official split {split}")
-        split_ids[split] = []
-        for path in paths:
-            source_files[str(path.relative_to(data_root))] = file_hash(path)
-            with path.open("rb") as source:
-                for task in ijson.items(source, "item"):
-                    normalized = normalize_task(task, ranks)
-                    task_id = normalized["annotation_id"]
-                    if task_id in tasks:
-                        raise ValueError(f"duplicate annotation_id: {task_id}")
-                    # File identity never uses untrusted dataset text as a path.
-                    filename = hashlib.sha256(task_id.encode()).hexdigest() + ".json"
-                    target = output / "cases" / filename
-                    write_json(target, normalized)
-                    tasks[task_id] = {
-                        "annotation_id": task_id,
-                        "website": normalized["website"],
-                        "domain": normalized["domain"],
-                        "subdomain": normalized["subdomain"],
-                        "spec": normalized["confirmed_task"],
-                        "file": f"cases/{filename}",
-                        "sha256": file_hash(target),
-                        "official_split": split,
-                        "n_steps": len(normalized["steps"]),
-                    }
-                    split_ids[split].append(task_id)
-        if not diagnostic and len(split_ids[split]) != OFFICIAL_COUNTS[split]:
-            raise ValueError(
-                f"{split}: expected {OFFICIAL_COUNTS[split]} tasks, got {len(split_ids[split])}"
-            )
+    source_files = official_sources(data_root, diagnostic=diagnostic)
+    tasks, split_ids = {}, {name: [] for name in OFFICIAL_COUNTS}
+    output.mkdir(parents=True, exist_ok=True)
+    # Spool rows so a case spanning shards is complete without keeping HTML in RAM.
+    with TemporaryDirectory(prefix=".actions-", dir=output) as temporary:
+        spool = Path(temporary)
+        records = {}
+        for split, source_file, row in action_rows(data_root, source_files):
+            validate_step_identity(row)
+            task_id = row["annotation_id"]
+            metadata = row_metadata(row)
+            entry = records.setdefault(task_id, {"metadata": metadata, "split": split,
+                                                "actions": {}, "uids": set()})
+            if entry["metadata"] != metadata or entry["split"] != split:
+                raise ValueError(f"{task_id}: inconsistent task metadata or split")
+            index, uid = row["target_action_index"], row["action_uid"]
+            if index in entry["actions"] or uid in entry["uids"]:
+                raise ValueError(f"{task_id}: duplicate published step")
+            entry["uids"].add(uid)
+            action = {key: row[key] for key in ("operation", "pos_candidates", "neg_candidates")}
+            image = row.get("screenshot") or {}
+            blob = image.get("bytes")
+            asset_record = None
+            if isinstance(blob, bytes):
+                digest = hashlib.sha256(blob).hexdigest()
+                asset = output / "images" / f"{digest}.bin"
+                asset.parent.mkdir(exist_ok=True)
+                if not asset.exists():
+                    asset.write_bytes(blob)
+                asset_record = {
+                    "path": f"images/{digest}.bin", "sha256": digest, "bytes": len(blob),
+                    "annotation_id": task_id, "action_uid": uid,
+                    "target_action_index": index, "source_file": source_file,
+                }
+            action.update(action_uid=uid, target_action_index=index,
+                          cleaned_html=row["cleaned_html"], image=asset_record)
+            name = hashlib.sha256(f"{task_id}/{uid}".encode()).hexdigest() + ".json"
+            write_json(spool / name, action)
+            entry["actions"][index] = name
+        for task_id, entry in sorted(records.items()):
+            task = {**entry["metadata"], "actions": [
+                json.loads((spool / name).read_text(encoding="utf-8"))
+                for _, name in sorted(entry["actions"].items())]}
+            normalized = normalize_task(task, ranks)
+            filename = hashlib.sha256(task_id.encode()).hexdigest() + ".json"
+            target = output / "cases" / filename
+            write_json(target, normalized)
+            split = entry["split"]
+            tasks[task_id] = {**{key: normalized[key] for key in (
+                "annotation_id", "website", "domain", "subdomain")},
+                "spec": normalized["confirmed_task"], "file": f"cases/{filename}",
+                "sha256": file_hash(target), "official_split": split,
+                "n_steps": len(normalized["steps"]),
+                "step_ids": [[step["target_action_index"], step["action_uid"]]
+                             for step in normalized["steps"]]}
+            split_ids[split].append(task_id)
+    if not diagnostic:
+        for split, count in OFFICIAL_COUNTS.items():
+            if len(split_ids[split]) != count:
+                raise ValueError(f"{split}: expected {count} tasks, got {len(split_ids[split])}")
+            if sum(tasks[key]["n_steps"] for key in split_ids[split]) != OFFICIAL_STEPS[split]:
+                raise ValueError(f"{split}: published step count differs")
     if not split_ids["train"]:
         raise ValueError("train is empty")
     holdout = make_holdout([tasks[item] for item in split_ids["train"]], seed)
     for split in OFFICIAL_COUNTS:
         if split != "train":
             holdout["parts"][split] = sorted(split_ids[split])
-    download_manifest = data_root / "download-manifest.json"
-    prefetch_manifest = data_root / "prefetch-revision.json"
-    identity_path = download_manifest if download_manifest.exists() else prefetch_manifest
-    identity = json.loads(identity_path.read_text()) if identity_path.exists() else {}
     manifest = {
-        "version": 4,
+        "version": INVENTORY_VERSION,
         "observation": DOM_IDENTITY,
         "diagnostic": diagnostic,
         "top_k": 50,
-        "source_repository": identity.get("repository"),
-        "source_revision": identity.get("revision"),
+        "source_repository": DATASET_SOURCE,
+        "source_revision": DATASET_REVISION,
         "source_files": source_files,
         "ranks_sha256": file_hash(ranks_file),
         "tasks": tasks,
@@ -265,10 +306,14 @@ def prepare(
 
 
 def load_inventory(root: Path, *, seed: int | None = None) -> tuple[dict, dict[str, list[Case]]]:
+    from swarmevo.benches.mind2web.source import DATASET_REVISION, DATASET_SOURCE
+
     manifest = json.loads((root / "manifest.json").read_text(encoding="utf-8"))
     if (
         type(manifest.get("version")) is not int
-        or manifest["version"] != 4
+        or manifest["version"] != INVENTORY_VERSION
+        or manifest.get("source_repository") != DATASET_SOURCE
+        or manifest.get("source_revision") != DATASET_REVISION
         or manifest.get("observation") != DOM_IDENTITY
         or manifest.get("top_k") != 50
         or type(manifest.get("diagnostic")) is not bool
@@ -318,6 +363,7 @@ def load_inventory(root: Path, *, seed: int | None = None) -> tuple[dict, dict[s
                 "sha256": item["sha256"],
                 "official_split": item["official_split"],
                 "n_steps": item["n_steps"],
+                "step_ids": item["step_ids"],
             }
             cases.append(Case(task_id, item["website"], payload))
         parts[split] = cases
@@ -330,6 +376,8 @@ def load_inventory(root: Path, *, seed: int | None = None) -> tuple[dict, dict[s
         for split, count in OFFICIAL_COUNTS.items():
             if sum(item["official_split"] == split for item in manifest["tasks"].values()) != count:
                 raise ValueError("incomplete official inventory")
+            if sum(item["n_steps"] for item in manifest["tasks"].values() if item["official_split"] == split) != OFFICIAL_STEPS[split]:
+                raise ValueError("incomplete official published step inventory")
     return manifest, parts
 
 
@@ -345,4 +393,14 @@ def read_case(case: Case) -> dict:
         or task["confirmed_task"] != case.payload["spec"]
     ):
         raise ValueError("case identity mismatch")
+    if [[s["target_action_index"], s["action_uid"]] for s in task["steps"]] != case.payload["step_ids"]:
+        raise ValueError("published step identity changed")
+    for step in task["steps"]:
+        image = step["image"]
+        if image is None:
+            continue
+        asset = (path.parent.parent / image["path"]).resolve()
+        if not asset.is_relative_to(path.parent.parent.resolve()):
+            raise ValueError("image path escapes inventory")
+        image["path"] = str(asset)
     return task

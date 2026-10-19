@@ -51,7 +51,7 @@ def prepare(args):
     from swarmevo.benches.mind2web.dataset import load_inventory
     inventory=args.inventory.resolve();manifest,parts=load_inventory(inventory,seed=42)
     if manifest['diagnostic'] or {k:len(parts[k]) for k in ('train','validation',*TEST_SPLITS)} != {
-            'train':303,'validation':101,'test_task':252,'test_website':177,'test_domain':912}:
+            'train':303,'validation':101,'test_task':177,'test_website':142,'test_domain':694}:
         raise ValueError('Complete official seed42 inventory required')
     out=args.output.resolve();out.mkdir(parents=True,exist_ok=False)
     frozen=out/'source_at_launch'
@@ -72,7 +72,7 @@ def prepare(args):
            '--continue-case-errors','--output',str(out/'aligned_train')]
     add('aligned_train','aligned_train','train',train,slots=args.training_workers,
         ids=manifest['parts']['train']*2)
-    for split in TEST_SPLITS:
+    for split in TEST_SPLITS if getattr(args, 'include_paper', False) else ():
         name='paper_'+split
         add(name,'paper',split,base+['--mode','stream','--scope','global','--split',split,
             '--config',str(out/'config_stream.json'),'--output',str(out/name)],ids=manifest['parts'][split])
@@ -101,7 +101,7 @@ def prepare(args):
           'inventory_sha256':file_hash(inventory/'manifest.json'),'split_sha256':manifest['split_sha256'],
           'workers':args.workers,'training_workers':args.training_workers,'jobs':jobs,
           'expected_episodes':sum(j['expected'] for j in jobs),
-          'protocol':'A paper-flow adaptation; B official-feedback batch training then frozen tests; shared no-memory control',
+          'protocol':'Swarm 90b6cd5 aligned B training with post-execution references, frozen tests, matched no-memory control; optional A',
           'model_note':'DeepSeek and BGE replacements declared; not exact Gemini reproduction.'}
     write_json(out/'plan.json',plan)
     write_json(out/'input_hashes.json',{str(p.relative_to(out)):file_hash(p) for p in
@@ -118,14 +118,33 @@ def collect(out,plan,done,failed,active):
         folder=Path(job['output']);key=job['group']+'/'+job['split']
         g=groups.setdefault(key,{'scheduled':0,'processed':0,'scored':0,'failed':0,'complete':True})
         g['scheduled']+=job['expected'];g['complete'] &= job['name'] in done
-        rows=validation_rows(out,job) if job['group'].startswith('validation_epoch') else (
+        rows=validation_rows(out,job) if job['group'] != 'aligned_train' else (
             load(folder/'results.json') if (folder/'results.json').exists() else [])
         all_rows.setdefault(key,[]).extend(rows)
         outcomes=load(folder/'case_outcomes.json') if (folder/'case_outcomes.json').exists() else []
-        g['processed']+=len(outcomes);g['scored']+=len(rows)
-        g['failed']+=len(load(folder/'failures.json')) if (folder/'failures.json').exists() else 0
+        if job['group'] != 'aligned_train':
+            ledger=load(out/'validation_retries.json') if (out/'validation_retries.json').exists() else {}
+            folders=[folder]+[Path(r['output']) for r in ledger.get(job['name'],[])]
+            attempted=set()
+            errors=0
+            for attempt_folder in folders:
+                f=attempt_folder/'case_outcomes.json'
+                for item in load(f) if f.exists() else []:
+                    attempted.add(item.get('case_id') or item['episode_id'].split(':',1)[1])
+                f=attempt_folder/'failures.json'
+                errors+=len(load(f)) if f.exists() else 0
+            scored={row['case_id'] for row in rows}
+            g['processed']+=len(attempted|scored)
+            g['failed']+=len(attempted-scored)
+            g['historical_failure_events']=g.get('historical_failure_events',0)+errors
+        else:
+            g['processed']+=len(outcomes)
+            g['failed']+=len(load(folder/'failures.json')) if (folder/'failures.json').exists() else 0
+        g['scored']+=len(rows)
     for key,rows in all_rows.items():
         groups[key]['metrics']=aggregate([r['metrics'] for r in rows])
+        groups[key]['full_coverage'] = groups[key]['scored'] == groups[key]['scheduled']
+        groups[key]['metrics_population'] = 'full scheduled population' if groups[key]['full_coverage'] else 'partial scored population; not a final result'
     paired={}
     for method in ('paper','aligned'):
         for split in TEST_SPLITS:
@@ -139,15 +158,18 @@ def collect(out,plan,done,failed,active):
             'interpretation':'A and B differ in data/feedback/protocol; compare each with its matched no-memory control. Partial metrics require coverage.'}
     write_json(out/'comparison.json',report)
     lines=['# ReasoningBank 两组实验进度','',
-           'A 为论文自评持续学习适配；B 为官方评分训练后冻结测试。两组均为单 agent。模型 DeepSeek-V4-Flash-0731，BGE-small；不宣称完全复现论文。','',
+           'B 为官方评分及训练失败步骤参考答案指导的经验提取，随后冻结测试；无记忆为同底座对照。A可选。thinking开启，执行上限64000，BGE-small。','',
            '| 组别 / split | 已处理 / 计划 | 完整评分 | 失败 | Step SR 宏平均 | 完成 |',
            '|---|---:|---:|---:|---:|---|']
     for key,g in groups.items():
         value=g['metrics'].get('step_success_rate')
         score=f'{value*100:.2f}%' if value is not None else '—'
         lines.append(f"| {key} | {g['processed']}/{g['scheduled']} | {g['scored']} | {g['failed']} | {score} | {g['complete']} |")
-    lines+=['','训练汇总跨两轮；泛化结论使用官方测试结果。缺测不补造分数，完整覆盖和共同完成集合同时报告。',
-            '官方评分只进入 B 的训练后提炼；A 不读官方评分。验证仅用于 B 快照选择。',
+    fixed=all(j['group'] in {'aligned','none'} for j in plan['jobs'])
+    lines+=['',
+            '固定第一轮训练经验库；验证和测试均冻结，不再训练或选库。' if fixed else '训练轮数及快照选择以运行计划为准。',
+            '泛化结论使用官方测试结果。缺测不补造分数，完整覆盖和共同完成集合同时报告。',
+            '失败列为已尝试但仍未评分的题数；恢复成功的历史接口故障不计入该列。官方评分只进入 B 的训练后提炼。',
             '详细请求和 token 用量在各运行 events.jsonl / audit.json 中，结束后汇总为 usage.json。','']
     (out/'REPORT.md').write_text('\n'.join(lines))
     return report
@@ -237,7 +259,7 @@ def execute(out, *, handoff=None, capacity=None):
                 expected=retries[-1]['expected'] if retries else job['expected']
                 if summary['processed']!=expected:
                     raise ValueError('Job coverage differs from plan')
-                if job['group'].startswith('validation_epoch'):
+                if job['group'] != 'aligned_train' and '--mode' in job['command'] and job['command'][job['command'].index('--mode')+1] == 'eval':
                     observed={r['case_id'] for r in validation_rows(out,job)}
                     missing=[cid for cid in job['case_ids'] if cid not in observed]
                     if missing and len(retries)<2:
@@ -257,6 +279,11 @@ def execute(out, *, handoff=None, capacity=None):
                                               stdin=subprocess.DEVNULL,start_new_session=True)
                         running[name]=(proc,retry_log)
                         continue
+                    if missing:
+                        failed[name] = f'missing_{len(missing)}_after_3_attempts'
+                        raise RuntimeError(f'Incomplete evaluation coverage: {name}; completed predictions retained')
+                if job['group'] == 'aligned_train' and summary.get('failed', 0):
+                    raise RuntimeError('Training has unresolved failures; do not start frozen evaluations')
                 done.append(name)
             report=collect(out,plan,done,failed,running)
             state={'status':'running','started':started,'updated':time.time(),'elapsed_seconds':time.time()-started,
@@ -301,6 +328,7 @@ def main():
     p.add_argument('--env-file',type=Path)
     p.add_argument('--execute',action='store_true')
     p.add_argument('--prepare-only',action='store_true')
+    p.add_argument('--include-paper',action='store_true',help='Schedule A streaming in addition to the priority B/control campaign')
     a=p.parse_args();out=a.output.resolve()
     if not a.execute:
         if not a.inventory or not 1<=a.training_workers<=a.workers<=16:
@@ -310,6 +338,7 @@ def main():
     from dotenv import load_dotenv
     if a.env_file:load_dotenv(a.env_file,override=False)
     if not os.environ.get('OPENAI_API_KEY'):p.error('OPENAI_API_KEY missing')
+    os.environ.setdefault('REASONINGBANK_RATE_FILE', str(out/'request_admission.txt'))
     frozen=out/'source_at_launch'
     if ROOT!=frozen:
         os.environ['PYTHONPATH']=str(frozen);os.chdir(frozen)

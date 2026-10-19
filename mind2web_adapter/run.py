@@ -40,7 +40,7 @@ def recoverable_case_error(exc, learning=False):
     from .model import DeadlineExceeded, is_quota_error
     return not is_quota_error(exc) and (
         isinstance(exc, DeadlineExceeded) or
-        type(exc).__name__ in {'APITimeoutError', 'APIConnectionError', 'RateLimitError', 'InternalServerError'} or
+        type(exc).__name__ in {'APITimeoutError', 'APIConnectionError', 'RateLimitError', 'InternalServerError', 'IncompleteResponse'} or
         (learning and isinstance(exc, ValueError)))
 
 
@@ -132,6 +132,8 @@ def execute_run(out):
             bank_identity['retrieval'] = 'web-query-cosine-top1-plain-v2'
         if config.get('feedback_source') == 'official':
             bank_identity['feedback_source'] = 'official'
+        from .protocol import execution_identity
+        bank_identity.update(execution_identity(config))
         if streaming:
             bank_identity.update(memory_protocol='stream-empty-v1', stream_split=split,
                 stream_case_order_sha256=digest(json.dumps([c.id for c in cases])))
@@ -189,7 +191,7 @@ def execute_run(out):
                 folder.mkdir(parents=True, exist_ok=bool(recovery and episode == recovery['failed_episode']))
                 progress.update(phase='retrieval', active=case.id, epoch=epoch, step=0)
                 task = read_case(case)
-                public = public_case(task)
+                public = public_case(task, config.get('input_mode', 'text'))
                 before = file_hash(out / 'memory.json')
                 selected, text, vector, scores = bank.select(case.id, case.family_id, public['task'])
                 reusing = recovery and episode == recovery['failed_episode']
@@ -209,7 +211,14 @@ def execute_run(out):
                             'source_sha256': case.payload['sha256'], 'episode_id': episode, 'split': split})
                         write_json(folder / 'retrieval.json', {'episode_ids': selected, 'selected_memory': text,
                             'scores': scores, 'memory_before_sha256': before, 'scope': options['scope']})
-                        predictions = execute(public, config, folder, text, progress)
+                        if options['mode'] == 'eval' and options.get('eval_windows', 1) > 1:
+                            from .frozen_recovery import restore_prefix, execute_windows
+                            restore_prefix(options.get('eval_recovery_roots', []), folder, public,
+                                config, load(folder/'retrieval.json'), load(folder/'case_identity.json'))
+                            predictions = execute_windows(public, config, folder, text, progress,
+                                execute, recoverable_case_error, options['eval_windows'])
+                        else:
+                            predictions = execute(public, config, folder, text, progress)
                 except Exception as exc:
                     if not options.get('continue_case_errors') or not recoverable_case_error(exc):
                         raise
@@ -295,6 +304,8 @@ def main():
     p.add_argument('--case-ids-file', type=Path, help='Evaluation-only subset from the selected split, for independent frozen shards')
     p.add_argument('--memory-from', type=Path)
     p.add_argument('--resume-from', type=Path, help='Recover a failed train/stream action or learning stage into a new output')
+    p.add_argument('--eval-recovery-roots', nargs='*', default=[], help='Prior frozen evaluation outputs in chronological order')
+    p.add_argument('--eval-windows', type=int, default=1, help='Bounded infrastructure windows, preserving completed evaluation steps')
     p.add_argument('--continue-case-errors', action='store_true', help='Record recoverable per-case failures and continue; quota/integrity errors remain fatal')
     p.add_argument('--embedding-cache', type=Path, default=ROOT / '.models')
     p.add_argument('--config', type=Path, help='Defaults to config_stream.json for stream, config.json otherwise')
@@ -318,6 +329,10 @@ def main():
         p.error('Frozen memory evaluation requires --memory-from')
     if a.resume_from and (a.mode not in {'train', 'stream'} or a.scope == 'none' or a.memory_from):
         p.error('Recovery requires training/streaming with memory, without --memory-from')
+    if not 1 <= a.eval_windows <= 3 or ((a.eval_recovery_roots or a.eval_windows > 1) and a.mode != 'eval'):
+        p.error('Evaluation recovery requires eval mode and 1..3 windows')
+    if a.eval_recovery_roots and a.eval_windows < 2:
+        p.error('Evaluation prefix recovery requires --eval-windows 2 or 3')
     from dotenv import load_dotenv
     if a.env_file:
         load_dotenv(a.env_file.resolve(), override=False)

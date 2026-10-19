@@ -20,13 +20,25 @@ Historical reasoning memories may help, but their relevance and correctness are 
 '''
 
 
-def public_case(task):
+def public_case(task, input_mode='text'):
     # Explicit whitelist: no gold, raw candidates/positive membership or future observations.
-    return {'case_id': task['annotation_id'], 'website': task['website'],
+    result = {'case_id': task['annotation_id'], 'website': task['website'],
             'task': task['confirmed_task'],
             'observations': [{key: step['observation'][key] for key in
                 ['task', 'previous_actions', 'format', 'html', 'candidate_ids', 'missing_candidates']}
                 for step in task['steps']]}
+    if input_mode not in {'text', 'multimodal'}:
+        raise ValueError('Unknown input mode')
+    if input_mode == 'multimodal':
+        from swarmevo.runtime.images import validate_image
+        for obs, step in zip(result['observations'], task['steps'], strict=True):
+            asset = step.get('image')
+            if not asset or any(asset[k] != v for k, v in {
+                'annotation_id': task['annotation_id'], 'action_uid': step['action_uid'],
+                'target_action_index': step['target_action_index']}.items()):
+                raise ValueError('Missing or mismatched before-action screenshot')
+            obs['image'] = validate_image(asset)
+    return result
 
 
 def parse_action(text, candidates, memory_count=0):
@@ -89,8 +101,11 @@ def _execute(public, config, out, memory='', progress=None, model_factory=Model,
         if time.monotonic() >= deadline:
             raise DeadlineExceeded('Case deadline reached')
         event(out, 'step_started', step=index)
+        from swarmevo.runtime.images import user_content
+        text_observation = {k: v for k, v in observation.items() if k != 'image'}
         messages = [{'role': 'system', 'content': system},
-                    {'role': 'user', 'content': json.dumps(observation, ensure_ascii=False)}]
+                    {'role': 'user', 'content': user_content(json.dumps(text_observation, ensure_ascii=False),
+                        [observation['image']] if observation.get('image') else [])}]
         model = model_factory(config, out, 'solve', min(deadline, time.monotonic() + config['step_seconds']),
                               selected_memory=memory, hard_deadline=deadline)
         record = {'step': index, 'observation': observation, 'attempts': []}

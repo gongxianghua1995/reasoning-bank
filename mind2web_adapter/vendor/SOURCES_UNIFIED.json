@@ -1,0 +1,49 @@
+{
+  "swarm_commit": "90b6cd58edf4bb8ca6d0ec885a8aa3ac65206801",
+  "files": [
+    {
+      "source": "swarmevo/benches/mind2web/dataset.py",
+      "target": "mind2web_adapter/vendor/swarmevo/benches/mind2web/dataset.py",
+      "sha256": "f907cb7318a878e67797fddbe3312c5abec88d354bdbb8d5c008eec72dd44bf9",
+      "unchanged": true
+    },
+    {
+      "source": "swarmevo/benches/mind2web/cache.py",
+      "target": "mind2web_adapter/vendor/swarmevo/benches/mind2web/cache.py",
+      "sha256": "deb5bce1cd0b3df7492bd31a388e6d0be610cb8e2f3cd7503fe4d6cbb837012b",
+      "unchanged": true
+    },
+    {
+      "source": "swarmevo/benches/mind2web/source.py",
+      "target": "mind2web_adapter/vendor/swarmevo/benches/mind2web/source.py",
+      "sha256": "0ad7f8103de4ca4fae6a67c6ff6e6ac6fc1e52fa67d7e6611f74a32b6a60659f",
+      "unchanged": true
+    },
+    {
+      "source": "swarmevo/benches/mind2web/snapshot.json",
+      "target": "mind2web_adapter/vendor/swarmevo/benches/mind2web/snapshot.json",
+      "sha256": "9e983b2ed0350838a0340a94b914e0a70c8f8c2a991f5b6ad298080f23a5e73a",
+      "unchanged": true
+    },
+    {
+      "source": "swarmevo/benches/mind2web/metrics.py",
+      "target": "mind2web_adapter/vendor/swarmevo/benches/mind2web/metrics.py",
+      "sha256": "dc245a0ed5772baab2843ed594d18f17a097033b797cb3fbd08dae30c9465034",
+      "unchanged": true
+    },
+    {
+      "source": "swarmevo/benches/mind2web/_vendor/dom_utils.py",
+      "target": "mind2web_adapter/vendor/swarmevo/benches/mind2web/_vendor/dom_utils.py",
+      "sha256": "dc2bff58cee5c16a12c82f450052d9de95807821ba067ef622193d5cf1e0a234",
+      "unchanged": true
+    },
+    {
+      "source": "swarmevo/runtime/images.py",
+      "target": "mind2web_adapter/vendor/swarmevo/runtime/images.py",
+      "sha256": "c4c6c875acef285e1cfb5c18102bf25d4864b3c5f29583910640ceadeb0ecba2",
+      "unchanged": true
+    }
+  ],
+  "previous_provenance": "SOURCES.json",
+  "reference_actions": "bench.py:152-171; reimplemented with train-only validation"
+}

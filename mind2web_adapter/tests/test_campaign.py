@@ -19,13 +19,13 @@ class CampaignTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             root=Path(d);out=root/'campaign';inventory=root/'inventory'
             write_json(inventory/'manifest.json',{})
-            counts={'train':303,'validation':101,'test_task':252,'test_website':177,'test_domain':912}
+            counts={'train':303,'validation':101,'test_task':177,'test_website':142,'test_domain':694}
             ids={k:[k+str(i) for i in range(n)] for k,n in counts.items()}
             manifest={'diagnostic':False,'parts':ids,'counts':counts,'source_files':{},'split_sha256':'fixed'}
-            a=argparse.Namespace(inventory=inventory,output=out,embedding_cache=root/'models',workers=8,training_workers=4)
+            a=argparse.Namespace(inventory=inventory,output=out,embedding_cache=root/'models',workers=8,training_workers=4,include_paper=True)
             with patch('swarmevo.benches.mind2web.dataset.load_inventory',return_value=(manifest,ids)):
                 plan=prepare(a)
-            self.assertEqual(plan['expected_episodes'],4932)
+            self.assertEqual(plan['expected_episodes'],3948)
             paper=[j for j in plan['jobs'] if j['group']=='paper']
             self.assertEqual(len(paper),3)
             self.assertEqual([j['case_ids'] for j in paper],[ids[s] for s in TEST_SPLITS])
@@ -65,7 +65,7 @@ class CampaignTest(unittest.TestCase):
                 self.assertEqual(execute(out,handoff=adopted,capacity=(lambda:16) if handoff else None),0)
             self.assertEqual(load(out/'selection.json')['selected_epoch'],2)
             self.assertEqual(load(out/'status.json')['status'],'finished')
-            self.assertEqual(load(out/'status.json')['processed'],4932)
+            self.assertEqual(load(out/'status.json')['processed'],3948)
             self.assertEqual(len(launched),len(jobs)-1+int(retry))
 
     def test_full_dag_keeps_streams_whole_and_selects_before_frozen_tests(self):

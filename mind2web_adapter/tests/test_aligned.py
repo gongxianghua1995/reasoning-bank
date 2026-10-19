@@ -54,7 +54,7 @@ class AlignedTest(unittest.TestCase):
             bank.allow_same_case=True
             self.assertEqual(bank.select('a','shop','search')[0],['epoch-1:a'])
 
-    def scenario(self, crash=False):
+    def scenario(self, crash=False, recover=False):
         with tempfile.TemporaryDirectory() as d:
             out=Path(d);inventory=out/'inventory';weights=out/'weights'
             write_json(inventory/'manifest.json',{})
@@ -63,13 +63,13 @@ class AlignedTest(unittest.TestCase):
             manifest={'diagnostic':False,'split_sha256':'fixture','cache_identity':{},
                       'parts':{'train':['a','b','c'],'validation':['v']},'counts':{},'source_files':{}}
             config={**CONFIG,'model':'fake','embedding_model':'fake','embedding_threads':1,
-                    'embedding_query_format':'plain','feedback_source':'official'}
+                    'embedding_query_format':'plain','feedback_source':'official','case_attempts':2}
             options={'inventory':str(inventory),'embedding_cache':str(weights),'seed':42,
                      'epochs':2,'batch_size':2,'workers':2,'continue_case_errors':False}
             write_json(out/'config.json',config);write_json(out/'options.json',options)
             write_json(out/'source_hashes.json',{})
             write_json(out/'input_hashes.json',{n:file_hash(out/n) for n in ['config.json','options.json']})
-            calls=[]
+            calls=[]; infrastructure_failures=[]
             def read(case):
                 task=task_fixture();task['annotation_id']=case.id;task['website']=case.family_id
                 return task
@@ -91,6 +91,10 @@ class AlignedTest(unittest.TestCase):
                     return ITEM
                 self.assertEqual(model.phase,'solve')
                 self.assertNotIn('official_score',request)
+                if recover and not infrastructure_failures and (model.out/'predictions_local.json').exists():
+                    from mind2web_adapter.model import DeadlineExceeded
+                    infrastructure_failures.append(True)
+                    raise DeadlineExceeded('synthetic infrastructure timeout after completed prefix')
                 obs=json.loads(messages[-1]['content'])
                 return json.dumps({'element_id':obs['candidate_ids'][0],'operation':'CLICK','value':''})
             original=write_json;thrown=[]
@@ -107,10 +111,10 @@ class AlignedTest(unittest.TestCase):
                 if crash:
                     with self.assertRaises(RuntimeError):execute(out)
                 self.assertEqual(execute(out),0)
-                self.assertEqual(len(calls),18) # 6 tasks: 2 actions + 1 extraction.
+                self.assertEqual(len(calls),18+int(recover)) # Completed prefixes are not repeated.
                 before=file_hash(out/'memory.json')
                 self.assertEqual(execute(out),0)
-                self.assertEqual(len(calls),18)
+                self.assertEqual(len(calls),18+int(recover))
                 self.assertEqual(file_hash(out/'memory.json'),before)
             self.assertEqual(len(load(out/'memory.json')['entries']),6)
             for batch in (out/'batches').iterdir():
@@ -127,6 +131,9 @@ class AlignedTest(unittest.TestCase):
 
     def test_recovery_after_bank_write_before_commit_receipt(self):
         self.scenario(crash=True)
+
+    def test_infrastructure_retry_reuses_completed_prefix_and_batch_memory(self):
+        self.scenario(recover=True)
 
 
 if __name__=='__main__':unittest.main()

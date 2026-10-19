@@ -1,0 +1,7 @@
+{
+  "paired_public_inputs_equal": 1111,
+  "aligned_output_banks_unchanged": 46,
+  "none_output_banks_empty": 38,
+  "same_model_config": true,
+  "source_memory_sha256": "25b915feab24e661c5a26f8196fe4adc6900b14673e7cc8c5786e608f04d810c"
+}

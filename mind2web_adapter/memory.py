@@ -107,7 +107,7 @@ def official_feedback(metrics):
             'action_metrics': result}
 
 
-def learn(public, out, config, vector, episode_id, model_factory=Model, *, metrics=None):
+def learn(public, out, config, vector, episode_id, model_factory=Model, *, metrics=None, reference_actions=None):
     trajectory = load(Path(out) / 'trajectory.json')
     payload = json.dumps({'task': public['task'], 'trajectory': trajectory}, ensure_ascii=False)
     notice = OFFLINE_NOTICE
@@ -129,17 +129,31 @@ def learn(public, out, config, vector, episode_id, model_factory=Model, *, metri
         status = 'success' if feedback['official_score'] == 1 else 'fail'
         write_json(Path(out) / 'official_feedback.json', feedback)
         write_json(Path(out) / 'learning_signal.json', {'status': status, 'source': 'official',
-                   'reference_actions_supplied': False})
+                   'reference_actions_supplied': reference_actions is not None})
         notice = notice.replace('No independent scores or hidden reference actions are supplied.',
             'Official post-execution scores are supplied; no reference actions or gold values are supplied. '
             'Use scores to distinguish correct and incorrect predictions, but do not invent the correct actions.')
         payload = json.dumps({'task': public['task'], 'trajectory': trajectory,
                               'official': feedback}, ensure_ascii=False)
+        if config.get('reference_actions'):
+            if reference_actions is None:
+                raise ValueError('B training requires explicit failed-step reference actions')
+            write_json(Path(out) / 'reference_actions.json', reference_actions)
+            notice = notice.replace('no reference actions or gold values are supplied.',
+                'annotated reference actions for failed training steps are supplied below.')
+            notice += (' References diagnose evaluation differences after execution. An empty element_ids '
+                       'means no reference target was displayed; do not invent or add a candidate. '
+                       'Extract transferable conditions, not task answers or page-local IDs.')
+            payload = json.dumps({**json.loads(payload), 'reference_actions': reference_actions}, ensure_ascii=False)
     else:
-        if metrics is not None:
+        if metrics is not None or reference_actions is not None:
             raise ValueError('Self-judged learning must not receive official feedback')
         messages = [{'role': 'system', 'content': 'Judge the web agent trajectory. ' + notice},
                     {'role': 'user', 'content': payload + "\nDid the agent predict all required steps correctly? Answer success or fail only."}]
+        if config.get('input_mode') == 'multimodal':
+            from swarmevo.runtime.images import user_content
+            messages[-1]['content'] = user_content(messages[-1]['content'],
+                [row['observation']['image'] for row in trajectory if row['observation'].get('image')])
         judge = model_factory(config, out, 'judge', time.monotonic() + config['judge_seconds'])
         status = None
         for attempt in range(1, 3):
@@ -158,6 +172,10 @@ def learn(public, out, config, vector, episode_id, model_factory=Model, *, metri
                 {'role': 'user', 'content': notice + '\nBEGIN RECORDED TRAJECTORY\n' + payload +
                  '\nEND RECORDED TRAJECTORY\nExtract 1-3 memory items in the required Markdown format. '
                  'Return memory, not an action. Avoid case-specific answers and page-local element IDs.'}]
+    if config.get('input_mode') == 'multimodal':
+        from swarmevo.runtime.images import user_content
+        images = [row['observation']['image'] for row in trajectory if row['observation'].get('image')]
+        messages[-1]['content'] = user_content(messages[-1]['content'], images)
     extractor = model_factory(config, out, 'extract', time.monotonic() + config['extract_seconds'])
     for attempt in range(1, 3):
         write_json(Path(out) / f'extract_request_{attempt}.json', messages)
